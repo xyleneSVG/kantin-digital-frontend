@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import FrappeProviderWrapper from "@/src/components/commons/FrappeProviderWrapper";
 import "./globals.css";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-jakarta", 
+  variable: "--font-jakarta",
 });
 
 const codeNext = localFont({
   src: "../src/fonts/code-next/CodeNext-Trial-Regular.ttf",
-  variable: "--font-code-next", 
+  variable: "--font-code-next",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${jakartaSans.variable} ${codeNext.variable} antialiased`}>
-        {children}
+        <FrappeProviderWrapper>
+          {children}
+        </FrappeProviderWrapper>
       </body>
     </html>
   );

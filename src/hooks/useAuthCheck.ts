@@ -3,14 +3,26 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { useFrappeAuth } from "frappe-react-sdk"; // <-- Import dari Frappe SDK
 
 export const useAuthCheck = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const [isChecking, setIsChecking] = useState(true);
+  const [isCheckingUI, setIsCheckingUI] = useState(true);
+
+  // Ambil data user dari Frappe SDK
+  // isLoading: true saat Frappe sedang ngecek cookie ke server
+  // currentUser: berisi data user kalau login, atau null/undefined kalau belum
+  const { currentUser, isLoading } = useFrappeAuth();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    // Kalau Frappe masih loading ngecek sesi di server, tunggu dulu!
+    if (isLoading) return;
+
+    // Cek apakah ada currentUser (artinya sudah login)
+    const isLoggedIn = !!currentUser; 
+    
+    // Status onboarding tetap baca dari localStorage
     const hasCompletedOnboarding =
       localStorage.getItem("hasCompletedOnboarding") === "true";
 
@@ -19,13 +31,13 @@ export const useAuthCheck = () => {
         if (pathname !== "/onboarding") {
           router.push("/onboarding");
         } else {
-          setIsChecking(false);
+          setIsCheckingUI(false);
         }
       } else {
         if (pathname !== "/login") {
           router.push("/login");
         } else {
-          setIsChecking(false);
+          setIsCheckingUI(false);
         }
       }
     } else {
@@ -34,12 +46,13 @@ export const useAuthCheck = () => {
         pathname === "/onboarding" ||
         pathname === "/"
       ) {
-        router.push("/");
+        router.push("/"); // Lempar ke halaman utama aplikasi
       } else {
-        setIsChecking(false);
+        setIsCheckingUI(false);
       }
     }
-  }, [router, pathname]);
+  }, [currentUser, isLoading, router, pathname]);
 
-  return { isChecking };
+  // Halaman dianggap "sedang ngecek" kalau UI masih ngecek ATAU Frappe masih loading
+  return { isChecking: isCheckingUI || isLoading };
 };

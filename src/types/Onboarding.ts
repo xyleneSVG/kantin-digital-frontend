@@ -1,4 +1,4 @@
-export type OnboardingButtonVariant = {
+type OnboardingButtonVariant = {
   color: string;
   text: string;
   icon: string;
@@ -14,7 +14,7 @@ type OnboardingBase = {
   description: string;
 };
 
-export type OnboardingSingleButton = OnboardingBase & {
+type OnboardingSingleButton = OnboardingBase & {
   buttonType: "single";
   buttonSingleText: string;
   inputPlaceholder: string;
@@ -22,7 +22,7 @@ export type OnboardingSingleButton = OnboardingBase & {
   inputName: string;
 };
 
-export type OnboardingDoubleButton = OnboardingBase & {
+type OnboardingDoubleButton = OnboardingBase & {
   buttonType: "double";
   buttonVariant: OnboardingButtonVariant[];
 };
