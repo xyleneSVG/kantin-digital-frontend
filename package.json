@@ -12,6 +12,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.36.0",
     "frappe-react-sdk": "^1.14.0",
+    "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",

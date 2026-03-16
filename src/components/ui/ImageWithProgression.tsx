@@ -8,6 +8,7 @@ interface ImageWithProgressionProps {
   illustrationSrc: string;
   imageClassName?: string;
   dotsClassName?: string;
+  direction: number;
 }
 
 export function ImageWithProgressionComponent({
@@ -16,16 +17,17 @@ export function ImageWithProgressionComponent({
   illustrationSrc,
   imageClassName,
   dotsClassName,
+  direction,
 }: ImageWithProgressionProps) {
   return (
     <>
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={currentStep}
-          initial={{ opacity: 0, x: 60 }}
+          initial={{ opacity: 0, x: direction > 0 ? 60 : -60 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -60 }}
-          transition={{ duration: 0.35 }}
+          exit={{ opacity: 0, x: direction > 0 ? -60 : 60 }}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
           className={cn("flex justify-center", imageClassName)}
         >
           <Image
@@ -33,6 +35,7 @@ export function ImageWithProgressionComponent({
             alt="On Boarding"
             width={1080}
             height={1080}
+            priority
             className="size-80"
           />
         </motion.div>
@@ -49,7 +52,7 @@ export function ImageWithProgressionComponent({
             key={`dot-${index}`}
             className={cn(
               index === currentStep ? "bg-primary" : "bg-disabled",
-              "h-1 w-5 rounded-sm",
+              "h-1 w-5 rounded-sm transition-colors duration-300",
             )}
           />
         ))}

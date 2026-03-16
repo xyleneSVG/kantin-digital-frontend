@@ -10,7 +10,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   separatedText?: string;
 }
 
-export default function ButtonProvidersComponent({
+export function ButtonProvidersComponent({
   icon,
   text,
   color,

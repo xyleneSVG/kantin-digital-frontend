@@ -6,7 +6,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
 }
 
-export default function ButtonComponent({ className, text, ...props }: Props) {
+export function ButtonComponent({ className, text, ...props }: Props) {
   return (
     <button
       className={cn(

@@ -1,9 +1,5 @@
-import AuthWrapper from "@/src/components/commons/AuthWrapper";
+import { HomePage } from "@/src/components/commons";
 
-export default function OnboardingRoute() {
-	return (
-		<AuthWrapper>
-			<p>Home</p>
-		</AuthWrapper>
-	);
+export default function HomeRoute() {
+  return <HomePage/>;
 }

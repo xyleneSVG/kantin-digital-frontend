@@ -10,7 +10,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   inputName: string;
 }
 
-export default function InputComponent({
+export function InputComponent({
   classNameInput,
   classNameContainer,
   classNamePlaceholder,

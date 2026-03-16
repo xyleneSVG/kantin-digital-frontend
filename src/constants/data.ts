@@ -27,14 +27,14 @@ export const DATA: DataType = {
         {
           color: "#25D366",
           text: "WhatsApp",
-          icon: ICON.ONBOARDING.whatsapp,
+          icon: ICON.ONBOARDING.WHATSAPP,
           textColor: "#FFFFFF",
           type: "whatsapp",
         },
         {
           color: "#EA4335",
           text: "Email",
-          icon: ICON.ONBOARDING.email,
+          icon: ICON.ONBOARDING.EMAIL,
           textColor: "#FFFFFF",
           type: "email",
         },
@@ -60,8 +60,31 @@ export const DATA: DataType = {
     description: "Masukkan Nomor Identitas dan Password ",
     inputArrayText: ["Nomor Identitas", "Password"],
     inputArrayType: ["number", "password"],
-		inputArrayName: ["identityNumber", "password"],
+    inputArrayName: ["identityNumber", "password"],
     buttonText: "Login",
     noHaveAccountRef: "/onboarding",
+  },
+  home: {
+    headerImage: ASSETS.HOME.HEADER,
+    canteenRecommendation: [
+      {
+        id: "/kantinJono12345",
+        image: ASSETS.HOME.KANTIN_A,
+        name: "Kantin Jono",
+        rating: 4.9,
+      },
+      {
+        id: "/kantinBorak321",
+        image: ASSETS.HOME.KANTIN_B,
+        name: "Kantin Borak",
+        rating: 4.9,
+      },
+      {
+        id: "/kantinCocop555",
+        image: ASSETS.HOME.KANTIN_C,
+        name: "Kantin Cocop",
+        rating: 4.9,
+      },
+    ],
   },
 };
