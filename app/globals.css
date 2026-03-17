@@ -10,6 +10,7 @@
   --secondary-foreground: #000000;
   --cream: #FFF3E0;
   --cream-foreground: #000000;
+  --dark: #2D3130;
 }
 
 @theme inline {
@@ -22,6 +23,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-cream: var(--cream);
   --color-cream-foreground: var(--cream-foreground);
+  --color-dark: var(--dark);
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-code-next), ui-monospace, SFMono-Regular, monospace;

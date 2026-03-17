@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import FrappeProviderWrapper from "@/src/components/commons/FrappeProviderWrapper";
 import "./globals.css";
+import { NavbarComponent } from "@/src/components/commons/Navbar";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body className={`${jakartaSans.variable} ${codeNext.variable} antialiased`}>
         <FrappeProviderWrapper>
           {children}
+          <NavbarComponent/>
         </FrappeProviderWrapper>
       </body>
     </html>
