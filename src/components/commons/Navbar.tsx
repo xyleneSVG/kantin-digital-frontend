@@ -8,9 +8,16 @@ import { cn } from "@/src/lib/utils";
 export function NavbarComponent() {
 	const pathname = usePathname();
 
+	const hideNavbarRoutes = ["/login", "/onboarding"];
+
+	if (hideNavbarRoutes.includes(pathname)) {
+		return null;
+	}
+
 	return (
 		<>
 			<div className="h-20 w-full"></div>
+
 			<div className="bg-dark fixed bottom-0 z-999 flex w-full flex-row items-center justify-around p-4 shadow-md">
 				<Link href="/">
 					<House
