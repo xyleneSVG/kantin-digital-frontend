@@ -17,20 +17,20 @@ export function InputSearchComponent({
   return (
     <div
       className={cn(
-        `border-primary bg-primary-foreground relative mx-auto flex h-10 w-82 flex-col justify-center rounded-[20px] border`,
-        classNameContainer,
+        "relative mx-auto flex h-10 w-full items-center rounded-[20px] border border-primary bg-primary-foreground overflow-hidden",
+        classNameContainer
       )}
     >
-      <div className={cn(`flex flex-row justify-around px-4`, classNameContent)}>
+      <div className={cn("flex w-full flex-row items-center gap-x-2 px-4", classNameContent)}>
         <input
           type="text"
           className={cn(
-            `w-65 font-sans text-[14px] outline-none`,
-            classNameInput,
+            "w-full flex-1 bg-transparent font-sans text-[14px] outline-none",
+            classNameInput
           )}
           placeholder="Lagi mau mamam apa?"
         />
-        <SearchIcon className={cn(`text-primary size-5`, classNameIcon)} />
+        <SearchIcon className={cn("size-5 shrink-0 text-primary", classNameIcon)} />
       </div>
     </div>
   );
