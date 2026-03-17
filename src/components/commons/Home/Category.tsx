@@ -6,15 +6,19 @@ interface Props {
   classNameContainer?: string;
 }
 
-export function CanteenRecommendationComponent({ classNameContainer }: Props) {
+export function CategoryComponent({ classNameContainer }: Props) {
   return (
     <Container className={cn(classNameContainer)}>
       <h1 className="mb-5 font-mono text-[16px] font-semibold">
-        Rekomendasi Kantin
+        Aneka Kategori
       </h1>
-      <div className="flex flex-col gap-y-3.5">
-        {DATA.home.canteenRecommendation.map((item, index) => (
-          <CardMenuComponent key={`canteen-${index}`} item={item} variant={"default"} />
+      <div className="grid grid-cols-3 gap-9.5 w-full">
+        {DATA.home.category.map((item) => (
+          <CardMenuComponent
+            key={item.id}
+            item={item}
+            variant="type2"
+          />
         ))}
       </div>
     </Container>

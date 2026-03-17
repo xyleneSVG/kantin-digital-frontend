@@ -1,11 +1,7 @@
-type CanteenRecommendationItem = {
-  id: string;
-  image: string;
-  name: string;
-  rating: number;
-};
+import { CardMenuItem } from "./shared/CardMenu";
 
 export type HomeItem = {
   headerImage: string;
-  canteenRecommendation: CanteenRecommendationItem[];
+  canteenRecommendation: CardMenuItem[];
+  category: CardMenuItem[];
 };

@@ -5,6 +5,7 @@ import { InputComponent } from "./Input";
 import { MultilineTextComponent } from "./MultilineText";
 import { ImageWithProgressionComponent } from "./ImageWithProgression";
 import { InputSearchComponent } from "./InputSearch";
+import { CardMenuComponent } from "./CardMenu";
 
 export {
   Container,
@@ -13,5 +14,6 @@ export {
   InputComponent,
   MultilineTextComponent,
   ImageWithProgressionComponent,
-  InputSearchComponent
+  InputSearchComponent,
+  CardMenuComponent
 };

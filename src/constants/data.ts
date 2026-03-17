@@ -69,21 +69,68 @@ export const DATA: DataType = {
     canteenRecommendation: [
       {
         id: "/kantinJono12345",
-        image: ASSETS.HOME.KANTIN_A,
+        image: ASSETS.HOME.KANTIN.A,
         name: "Kantin Jono",
         rating: 4.9,
       },
       {
         id: "/kantinBorak321",
-        image: ASSETS.HOME.KANTIN_B,
+        image: ASSETS.HOME.KANTIN.B,
         name: "Kantin Borak",
         rating: 4.9,
       },
       {
         id: "/kantinCocop555",
-        image: ASSETS.HOME.KANTIN_C,
+        image: ASSETS.HOME.KANTIN.C,
         name: "Kantin Cocop",
         rating: 4.9,
+      },
+    ],
+    category: [
+      {
+        id: "/kategori-ayam",
+        image: ICON.HOME.KATEGORI.AYAM,
+        name: "Ayam",
+      },
+      {
+        id: "/kategori-mie",
+        image: ICON.HOME.KATEGORI.MIE,
+        name: "Mie",
+      },
+      {
+        id: "/kategori-nasi",
+        image: ICON.HOME.KATEGORI.NASI,
+        name: "Nasi",
+      },
+      {
+        id: "/kategori-gorengan",
+        image: ICON.HOME.KATEGORI.GORENGAN,
+        name: "Gorengan",
+      },
+      {
+        id: "/kategori-eskrim",
+        image: ICON.HOME.KATEGORI.ESKRIM,
+        name: "Es Krim",
+      },
+      {
+        id: "/kategori-snack",
+        image: ICON.HOME.KATEGORI.SNACK,
+        name: "Snack",
+      },
+      {
+        id: "/kategori-cepat-saji",
+        image: ICON.HOME.KATEGORI.CEPAT_SAJI,
+        name: "Cepat Saji",
+      },
+      {
+        id: "/kategori-kuah",
+        image: ICON.HOME.KATEGORI.KUAH,
+        name: "Kuah",
+      },
+      {
+        id: "/kategori-sayur",
+        image: ICON.HOME.KATEGORI.SAYUR,
+        name: "Sayur",
       },
     ],
   },

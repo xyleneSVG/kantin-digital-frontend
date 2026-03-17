@@ -6,6 +6,10 @@
   --disabled: #EAEAEA;
   --primary: #6AB098;
   --primary-foreground: #ffffff;
+  --secondary: #EDE9E6;
+  --secondary-foreground: #000000;
+  --cream: #FFF3E0;
+  --cream-foreground: #000000;
 }
 
 @theme inline {
@@ -14,7 +18,11 @@
   --color-disabled: var(--disabled);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-cream: var(--cream);
+  --color-cream-foreground: var(--cream-foreground);
+
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-code-next), ui-monospace, SFMono-Regular, monospace;
 }

@@ -2,6 +2,7 @@ import { Container, InputSearchComponent } from "@/src/components/ui";
 import { ASSETS } from "@/src/constants/assets";
 import Image from "next/image";
 import { CanteenRecommendationComponent } from "./CanteenRecommendation";
+import { CategoryComponent } from "./Category";
 
 export default function HomePage() {
   return (
@@ -22,7 +23,7 @@ export default function HomePage() {
       <Container className="relative z-20 -translate-y-5">
         <InputSearchComponent classNameContainer="mb-[24px] border" />
         <CanteenRecommendationComponent classNameContainer="mb-6" />
-        <CanteenRecommendationComponent />
+        <CategoryComponent />
       </Container>
     </>
   );
