@@ -3,8 +3,9 @@ import AuthWrapper from "@/src/components/commons/AuthWrapper";
 
 export default function LoginRoute() {
   return (
-    <AuthWrapper>
-      <LoginPage />
-    </AuthWrapper>
+    // <AuthWrapper>
+    //   <LoginPage />
+    // </AuthWrapper>
+    <LoginPage />
   );
 }

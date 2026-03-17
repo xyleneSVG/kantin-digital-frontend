@@ -3,8 +3,9 @@ import AuthWrapper from "@/src/components/commons/AuthWrapper";
 
 export default function OnboardingRoute() {
   return (
-    <AuthWrapper>
-      <OnBoardingPage />
-    </AuthWrapper>
+    // <AuthWrapper>
+    //   <OnBoardingPage />
+    // </AuthWrapper>
+    <OnBoardingPage />
   );
 }
