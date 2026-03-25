@@ -133,5 +133,31 @@ export const DATA: DataType = {
         name: "Sayur",
       },
     ],
+    bestChoice: [
+      {
+        id: "/kantin-a",
+        image: ASSETS.HOME.MENU.A,
+        name: "Menu A",
+        rating: 4.9,
+      },
+      {
+        id: "/kantin-b",
+        image: ASSETS.HOME.MENU.B,
+        name: "Menu B",
+        rating: 4.9,
+      },
+      {
+        id: "/kantin-c",
+        image: ASSETS.HOME.MENU.C,
+        name: "Menu C",
+        rating: 4.9,
+      },
+      {
+        id: "/kantin-d",
+        image: ASSETS.HOME.MENU.C,
+        name: "Menu D",
+        rating: 4.9,
+      },
+    ]
   },
 };

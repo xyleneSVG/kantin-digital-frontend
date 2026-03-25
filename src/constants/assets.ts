@@ -1,7 +1,7 @@
 const PATH = {
   IMAGES: "/images/",
-  ICON: "/icon/"
-}
+  ICON: "/icon/",
+};
 
 export const ASSETS = {
   SPLASHSCREEN: PATH.IMAGES + "stemba.svg",
@@ -16,7 +16,12 @@ export const ASSETS = {
     KANTIN: {
       A: PATH.IMAGES + "kantinA.png",
       B: PATH.IMAGES + "kantinB.png",
-      C: PATH.IMAGES + "kantinC.png"
+      C: PATH.IMAGES + "kantinC.png",
+    },
+    MENU: {
+      A: PATH.IMAGES + "bestChoiceA.png",
+      B: PATH.IMAGES + "bestChoiceB.png",
+      C: PATH.IMAGES + "bestChoiceC.png",
     },
   },
 };
@@ -36,8 +41,8 @@ export const ICON = {
       SNACK: PATH.ICON + "kategori-snack.svg",
       CEPAT_SAJI: PATH.ICON + "kategori-cptsaji.svg",
       KUAH: PATH.ICON + "kategori-kuah.svg",
-      SAYUR: PATH.ICON + "kategori-sayur.svg"
-    }
+      SAYUR: PATH.ICON + "kategori-sayur.svg",
+    },
   },
   STAR: PATH.ICON + "star.png",
 };
