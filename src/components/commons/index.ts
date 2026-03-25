@@ -3,6 +3,7 @@ import FrappeProviderWrapper from "./FrappeProviderWrapper";
 import HomePage from "./Home";
 import LoginPage from "./Login";
 import OnBoardingPage from "./Onboarding";
+import ProfilePage from "./Profile";
 import SplashScreen from "./SplashScreen";
 
 export {
@@ -11,5 +12,6 @@ export {
   OnBoardingPage,
   LoginPage,
   SplashScreen,
-  HomePage
+  HomePage,
+  ProfilePage,
 };
