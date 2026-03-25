@@ -17,8 +17,8 @@ export function NavbarComponent() {
 	return (
 		<>
 			<div className="h-20 w-full"></div>
-			<div className="bg-dark fixed bottom-0 z-999 flex w-full justify-center shadow-md">
-				<div className="flex w-full max-w-82 flex-row items-center justify-around py-4">
+			<div className="bg-dark fixed bottom-0 z-999 flex w-full justify-center shadow-md rounded-t-xl">
+				<div className="flex w-full max-w-82 flex-row items-center justify-between py-5">
 					<Link href="/">
 						<House
 							className={cn(
