@@ -1,9 +1,11 @@
 "use client";
 
-import { House, NotebookTabs, Bell, MessageCircle, CircleUser } from "lucide-react";
+import { House, NotebookTabs, Bell, MessageCircle } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/src/lib/utils";
+import { ASSETS } from "@/src/constants/assets";
 
 export function NavbarComponent() {
 	const pathname = usePathname();
@@ -56,11 +58,15 @@ export function NavbarComponent() {
 					</Link>
 
 					<Link href="/profile">
-						<CircleUser
+						<Image 
+							src={ASSETS.PROFILE} 
+							alt={""} 
+							width={1920} 
+							height={1920} 
 							className={cn(
-								"size-7 transition-colors",
-								pathname === "/profile" ? "text-primary" : "text-primary-foreground"
-							)}
+								"size-7 object-cover rounded-full border", 
+								pathname === "/profile" ? "border-primary" : "border-primary-foreground"
+							)} 
 						/>
 					</Link>
 				</div>
