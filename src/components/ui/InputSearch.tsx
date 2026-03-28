@@ -6,6 +6,7 @@ interface Props {
   classNameContent?: string;
   classNameInput?: string;
   classNameIcon?: string;
+  placeholderText: string
 }
 
 export function InputSearchComponent({
@@ -13,6 +14,7 @@ export function InputSearchComponent({
   classNameContent,
   classNameInput,
   classNameIcon,
+  placeholderText
 }: Props) {
   return (
     <div
@@ -28,7 +30,7 @@ export function InputSearchComponent({
             "w-full flex-1 bg-transparent font-sans text-[14px] outline-none",
             classNameInput
           )}
-          placeholder="Lagi mau mamam apa?"
+          placeholder={placeholderText}
         />
         <SearchIcon className={cn("size-5 shrink-0 text-primary", classNameIcon)} />
       </div>
