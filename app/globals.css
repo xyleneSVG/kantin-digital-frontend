@@ -30,7 +30,7 @@
   --color-grey: var(--grey);
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-code-next), ui-monospace, SFMono-Regular, monospace;
+  --font-mono: var(--font-montserrat), ui-monospace, SFMono-Regular, monospace;
 }
 
 body {

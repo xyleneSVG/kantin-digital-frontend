@@ -12,7 +12,7 @@ export function HeaderWithBackButtonComponent({ className, title }: Props) {
   return (
     <div
       className={cn(
-        `text-primary-foreground relative flex max-w-90 mx-auto items-center justify-center`,
+        `text-primary-foreground relative flex max-w-90 mx-auto items-center justify-center font-mono`,
         className,
       )}
     >

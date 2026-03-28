@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Montserrat } from "next/font/google";
 import FrappeProviderWrapper from "@/src/components/commons/FrappeProviderWrapper";
 import "./globals.css";
 import { NavbarComponent } from "@/src/components/commons/Navbar";
@@ -10,9 +9,9 @@ const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
 });
 
-const codeNext = localFont({
-  src: "../src/fonts/code-next/CodeNext-Trial-Regular.ttf",
-  variable: "--font-code-next",
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
 });
 
 export const metadata: Metadata = {
@@ -27,10 +26,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${jakartaSans.variable} ${codeNext.variable} font-sans antialiased`}>
+      <body
+        className={`${jakartaSans.variable} ${montserrat.variable} font-sans antialiased`}
+      >
         <FrappeProviderWrapper>
           {children}
-          <NavbarComponent/>
+          <NavbarComponent />
         </FrappeProviderWrapper>
       </body>
     </html>
