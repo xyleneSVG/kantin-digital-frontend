@@ -13,9 +13,7 @@
     "framer-motion": "^12.36.0",
     "frappe-react-sdk": "^1.14.0",
     "lucide-react": "^0.577.0",
-    "next": "16.1.6",
-    "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
+    "next": "^16.2.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.5.0"
@@ -25,8 +23,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint": "^10.1.0",
+    "eslint-config-next": "^12.0.4",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

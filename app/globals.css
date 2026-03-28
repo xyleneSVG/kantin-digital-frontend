@@ -2,19 +2,22 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #1E1E1E;
-  --disabled: #EAEAEA;
-  --primary: #6AB098;
+  --foreground: #1e1e1e;
+  --disabled: #eaeaea;
+  --primary: #6ab098;
   --primary-foreground: #ffffff;
-  --secondary: #EDE9E6;
+  --secondary: #ede9e6;
   --secondary-foreground: #000000;
-  --cream: #FFF3E0;
+  --cream: #fff3e0;
   --cream-foreground: #000000;
-  --dark: #2D3130;
+  --dark: #2d3130;
+  --background-dark: #23272f;
+  --grey: #d9d9d9;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-dark: var(--background-dark);
   --color-foreground: var(--foreground);
   --color-disabled: var(--disabled);
   --color-primary: var(--primary);
@@ -24,6 +27,7 @@
   --color-cream: var(--cream);
   --color-cream-foreground: var(--cream-foreground);
   --color-dark: var(--dark);
+  --color-grey: var(--grey);
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-code-next), ui-monospace, SFMono-Regular, monospace;

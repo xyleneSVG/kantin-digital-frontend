@@ -6,6 +6,7 @@ import { MultilineTextComponent } from "./MultilineText";
 import { ImageWithProgressionComponent } from "./ImageWithProgression";
 import { InputSearchComponent } from "./InputSearch";
 import { CardMenuComponent } from "./CardMenu";
+import { HeaderWithBackButtonComponent } from "./HeaderWithBackButton";
 
 export {
   Container,
@@ -15,5 +16,6 @@ export {
   MultilineTextComponent,
   ImageWithProgressionComponent,
   InputSearchComponent,
-  CardMenuComponent
+  CardMenuComponent,
+  HeaderWithBackButtonComponent
 };

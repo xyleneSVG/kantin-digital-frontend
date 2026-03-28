@@ -25,7 +25,8 @@ export default function HomePage() {
         <InputSearchComponent classNameContainer="mb-[24px] border" />
         <CanteenRecommendationComponent classNameContainer="mb-6" />
         <CategoryComponent classNameContainer="mb-6" />
-        <BestChoiceComponent  />
+        <BestChoiceComponent />
+        <div className="h-20 w-full"></div>
       </Container>
     </>
   );

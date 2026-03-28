@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${jakartaSans.variable} ${codeNext.variable} antialiased`}>
+      <body className={`${jakartaSans.variable} ${codeNext.variable} font-sans antialiased`}>
         <FrappeProviderWrapper>
           {children}
           <NavbarComponent/>

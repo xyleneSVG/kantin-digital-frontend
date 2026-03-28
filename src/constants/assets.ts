@@ -24,7 +24,7 @@ export const ASSETS = {
       C: PATH.IMAGES + "bestChoiceC.png",
     },
   },
-  PROFILE: PATH.IMAGES + "profile.jpg",
+  PROFILE: PATH.IMAGES + "pp.jpg",
 };
 
 export const ICON = {
