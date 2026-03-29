@@ -6,11 +6,12 @@ import { BestChoiceComponent } from "./BestChoice";
 import { DATA } from "@/src/constants/data";
 
 export default function HomePage() {
+  const { headerImage, canteenRecommendation, category, bestChoice } = DATA.home;
   return (
     <>
       <div className="relative w-screen">
         <Image
-          src={DATA.home.headerImage}
+          src={headerImage}
           alt={""}
           width={1920}
           height={1080}
@@ -28,17 +29,17 @@ export default function HomePage() {
         />
         <CanteenRecommendationComponent
           sectionTitle="Rekomendasi Kantin"
-          data={DATA.home.canteenRecommendation}
+          data={canteenRecommendation}
           classNameContainer="mb-6"
         />
         <CategoryComponent
           classNameContainer="mb-6"
           sectionTitle={"Aneka Kategori"}
-          data={DATA.home.category}
+          data={category}
         />
         <BestChoiceComponent
           sectionTitle={"Pilihan Terbaik"}
-          data={DATA.home.bestChoice}
+          data={bestChoice}
         />
       </Container>
     </>
