@@ -6,7 +6,6 @@ import {
   ScrollText,
   UserSearch,
 } from "lucide-react";
-import Link from "next/link";
 import { IdentityComponent } from "./Identity";
 import { SelectionItemComponent } from "./SelectionItem";
 

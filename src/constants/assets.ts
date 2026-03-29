@@ -46,4 +46,8 @@ export const ICON = {
     },
   },
   STAR: PATH.ICON + "star.png",
+  NOTIFICATIONS: {
+    READY: PATH.ICON + "notif-ready.svg",
+    COOK: PATH.ICON + "notif-cook.svg",
+  },
 };
