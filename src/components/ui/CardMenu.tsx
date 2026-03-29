@@ -46,7 +46,7 @@ export function CardMenuComponent({ item, variant }: Props) {
         <p
           className={cn(
             "text-[14px]",
-            variant === "type2" && "text-center text-[13px] text-gray-800",
+            variant === "type2" && "text-center text-[14px] text-gray-800",
             variant === "type3" && "text-[14px] text-black"
           )}
         >
