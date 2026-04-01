@@ -28,11 +28,11 @@ export function NavbarComponent() {
 					/>
 				</Link>
 
-				<Link href="/list">
+				<Link href="/activity">
 					<NotebookTabs
 						className={cn(
 							"size-7 transition-colors",
-							pathname === "/list" ? "text-primary" : "text-primary-foreground"
+							pathname === "/activity" ? "text-primary" : "text-primary-foreground"
 						)}
 					/>
 				</Link>

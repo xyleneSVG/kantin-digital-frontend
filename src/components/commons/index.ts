@@ -1,3 +1,4 @@
+import ActivityPage from "./Activity";
 import AuthWrapper from "./AuthWrapper";
 import FrappeProviderWrapper from "./FrappeProviderWrapper";
 import HomePage from "./Home";
@@ -16,4 +17,5 @@ export {
   HomePage,
   ProfilePage,
   NotificationsPage,
+  ActivityPage,
 };
