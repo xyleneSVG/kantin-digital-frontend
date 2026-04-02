@@ -3,56 +3,64 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { useFrappeAuth } from "frappe-react-sdk"; // <-- Import dari Frappe SDK
+import { useFrappeAuth } from "frappe-react-sdk";
 
 export const useAuthCheck = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isCheckingUI, setIsCheckingUI] = useState(true);
 
-  // Ambil data user dari Frappe SDK
-  // isLoading: true saat Frappe sedang ngecek cookie ke server
-  // currentUser: berisi data user kalau login, atau null/undefined kalau belum
   const { currentUser, isLoading } = useFrappeAuth();
 
   useEffect(() => {
-    // Kalau Frappe masih loading ngecek sesi di server, tunggu dulu!
+    // Tunggu Frappe selesai cek session
     if (isLoading) return;
 
-    // Cek apakah ada currentUser (artinya sudah login)
-    const isLoggedIn = !!currentUser; 
-    
-    // Status onboarding tetap baca dari localStorage
+    const isLoggedIn = !!currentUser;
+
+    // onboarding status
     const hasCompletedOnboarding =
+      typeof window !== "undefined" &&
       localStorage.getItem("hasCompletedOnboarding") === "true";
 
+    // =========================
+    // 🔓 USER BELUM LOGIN
+    // =========================
     if (!isLoggedIn) {
+      // belum onboarding → paksa ke onboarding
       if (!hasCompletedOnboarding) {
         if (pathname !== "/onboarding") {
-          router.push("/onboarding");
-        } else {
-          setIsCheckingUI(false);
+          router.replace("/onboarding");
+          return;
         }
       } else {
+        // sudah onboarding → paksa ke login
         if (pathname !== "/login") {
-          router.push("/login");
-        } else {
-          setIsCheckingUI(false);
+          router.replace("/login");
+          return;
         }
       }
-    } else {
-      if (
-        pathname === "/login" ||
-        pathname === "/onboarding" ||
-        pathname === "/"
-      ) {
-        router.push("/"); // Lempar ke halaman utama aplikasi
-      } else {
-        setIsCheckingUI(false);
-      }
-    }
-  }, [currentUser, isLoading, router, pathname]);
 
-  // Halaman dianggap "sedang ngecek" kalau UI masih ngecek ATAU Frappe masih loading
+      // kalau sudah di halaman yang benar
+      setIsCheckingUI(false);
+      return;
+    }
+
+    // =========================
+    // 🔐 USER SUDAH LOGIN
+    // =========================
+    if (isLoggedIn) {
+      // cegah akses ke login & onboarding
+      if (pathname === "/login" || pathname === "/onboarding") {
+        router.replace("/");
+        return;
+      }
+
+      // allow akses halaman lain
+      setIsCheckingUI(false);
+      return;
+    }
+  }, [currentUser, isLoading, pathname, router]);
+
   return { isChecking: isCheckingUI || isLoading };
 };

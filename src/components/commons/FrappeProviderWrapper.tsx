@@ -20,7 +20,7 @@ export default function FrappeProviderWrapper({
   }
 
   const frappeUrl =
-    process.env.NEXT_PUBLIC_FRAPPE_URL || "http://localhost:8000";
+    process.env.NEXT_PUBLIC_FRAPPE_URL;
 
   return <FrappeProvider url={frappeUrl}>{children}</FrappeProvider>;
 }

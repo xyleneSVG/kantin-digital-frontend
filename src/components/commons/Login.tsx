@@ -1,16 +1,48 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
   ButtonComponent,
   Container,
   InputComponent,
   MultilineTextComponent,
 } from "@/src/components/ui";
+
 import { DATA } from "@/src/constants/data";
+import { loginUser } from "@/src/services/auth";
 import Image from "next/image";
 
 export default function LoginPage() {
   const data = DATA.login;
+
+  const router = useRouter();
+
+  // ✅ state untuk semua input (dynamic)
+  const [form, setForm] = useState<Record<string, string>>({});
+
+  // ✅ handle input change (tanpa ubah UI)
+  const handleChange = (name: string, value: string) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // ✅ handle login
+  const handleLogin = async () => {
+    try {
+      const nis = form["identityNumber"];
+      const password = form["password"] || "";
+
+      await loginUser(nis, password);
+
+      router.push("/");
+    } catch (err) {
+      console.error("Login gagal:", err);
+    }
+  };
 
   return (
     <Container className="mt-10 flex h-[calc(100dvh-65px)] flex-col justify-around px-2">
@@ -37,16 +69,29 @@ export default function LoginPage() {
           className="font-regular mb-10 text-center font-sans text-[16px]"
         />
 
-        {data.inputArrayText.map((_, index) => (
-          <InputComponent
-            classNameContainer="mb-4"
-            key={index}
-            placeholder={data.inputArrayText[index] || ""}
-            inputType={data.inputArrayType[index] || ""}
-            inputName={data.inputArrayName[index] || ""}
-          />
-        ))}
-        <ButtonComponent className="mt-1 mb-3" text={data.buttonText} />
+        {data.inputArrayText.map((_, index) => {
+          const name = data.inputArrayName[index] || "";
+
+          return (
+            <InputComponent
+              classNameContainer="mb-4"
+              key={index}
+              placeholder={data.inputArrayText[index] || ""}
+              inputType={data.inputArrayType[index] || ""}
+              inputName={name}
+              onChange={(e: any) =>
+                handleChange(name, e.target.value)
+              } // ✅ inject logic
+            />
+          );
+        })}
+
+        <ButtonComponent
+          className="mt-1 mb-3"
+          text={data.buttonText}
+          onClick={handleLogin} // ✅ inject logic
+        />
+
         <p className="font-sans text-[12px] font-normal text-center">
           Belum mengaktifkan akun?{" "}
           <a
