@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Montserrat } from "next/font/google";
 import FrappeProviderWrapper from "@/src/components/commons/FrappeProviderWrapper";
 import "./globals.css";
-import { NavbarComponent } from "@/src/components/commons/Navbar";
+import { AuthWrapper, NavbarComponent } from "@/src/components/commons";
 
 const jakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -30,8 +30,10 @@ export default function RootLayout({
         className={`${jakartaSans.variable} ${montserrat.variable} font-sans antialiased`}
       >
         <FrappeProviderWrapper>
-          {children}
-          <NavbarComponent />
+          <AuthWrapper>
+            {children}
+            <NavbarComponent />
+          </AuthWrapper>
         </FrappeProviderWrapper>
       </body>
     </html>

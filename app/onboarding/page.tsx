@@ -1,11 +1,5 @@
-import OnBoardingPage from "@/src/components/commons/Onboarding";
-import AuthWrapper from "@/src/components/commons/AuthWrapper";
+import { OnBoardingPage } from "@/src/components/commons";
 
 export default function OnboardingRoute() {
-  return (
-    // <AuthWrapper>
-    //   <OnBoardingPage />
-    // </AuthWrapper>
-    <OnBoardingPage />
-  );
+  return <OnBoardingPage/>;
 }
