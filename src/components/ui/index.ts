@@ -7,6 +7,7 @@ import { ImageWithProgressionComponent } from "./ImageWithProgression";
 import { InputSearchComponent } from "./InputSearch";
 import { CardMenuComponent } from "./CardMenu";
 import { HeaderWithBackButtonComponent } from "./HeaderWithBackButton";
+import { ModalComponent } from "./Modal";
 
 export {
   Container,
@@ -17,5 +18,6 @@ export {
   ImageWithProgressionComponent,
   InputSearchComponent,
   CardMenuComponent,
-  HeaderWithBackButtonComponent
+  HeaderWithBackButtonComponent,
+  ModalComponent
 };
