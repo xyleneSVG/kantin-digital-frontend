@@ -14,12 +14,14 @@ import {
 
 import { DATA } from "@/src/constants/data";
 import { loginUser } from "@/src/services/auth";
+import { validateAllFieldsFilled } from "@/src/utils/validateAllFieldsFilled";
 
 export default function LoginPage() {
   const data = DATA.login;
   const router = useRouter();
 
   const [form, setForm] = useState<Record<string, string>>({});
+  const [disabledButton, setDisabledButton] = useState(true);
 
   const [errorState, setErrorState] = useState({
     isOpen: false,
@@ -29,13 +31,18 @@ export default function LoginPage() {
   });
 
   const handleChange = (name: string, value: string) => {
-    setForm((prev) => ({
-      ...prev,
+    const updatedForm = {
+      ...form,
       [name]: value,
-    }));
+    };
+    
+    setForm(updatedForm);
+    setDisabledButton(!validateAllFieldsFilled(updatedForm, data.inputArrayName));
   };
 
   const handleLogin = async () => {
+    if (disabledButton) return;
+
     try {
       const nis = form["identityNumber"];
       const password = form["password"] || "";
@@ -45,9 +52,9 @@ export default function LoginPage() {
     } catch (err: any) {
       setErrorState({
         isOpen: true,
-        title: err.title,
-        message: err.message,
-        highlight: err.highlight
+        title: err.title || "Login Gagal",
+        message: err.message || "Terjadi kesalahan.",
+        highlight: err.highlight || "Silakan coba lagi."
       });
     }
   };
@@ -94,9 +101,10 @@ export default function LoginPage() {
           })}
 
           <ButtonComponent
-            className="mt-1 mb-3"
+            className={`mt-1 mb-3 ${disabledButton ? "opacity-50 grayscale" : "opacity-100"}`}
             text={data.buttonText}
             onClick={handleLogin}
+            disabled={disabledButton}
           />
 
           <p className="font-sans text-[12px] font-normal text-center">
@@ -117,7 +125,8 @@ export default function LoginPage() {
         title={errorState.title}
         message={errorState.message}
         highlight={errorState.highlight}
-        onClose={() => setErrorState({ isOpen: false, title: "", message: "", highlight: "" })} />
+        onClose={() => setErrorState({ isOpen: false, title: "", message: "", highlight: "" })}
+      />
     </>
   );
 }
