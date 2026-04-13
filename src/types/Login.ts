@@ -7,5 +7,4 @@ export type LoginItem = {
   inputArrayType: string[]
 	inputArrayName: string[]
 	buttonText: string;
-	noHaveAccountRef: string;
 };

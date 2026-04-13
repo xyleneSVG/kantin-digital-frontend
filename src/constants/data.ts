@@ -62,7 +62,6 @@ export const DATA: DataType = {
     inputArrayType: ["number", "password"],
     inputArrayName: ["identityNumber", "password"],
     buttonText: "Login",
-    noHaveAccountRef: "/onboarding",
   },
   home: {
     headerImage: ASSETS.HOME.HEADER,

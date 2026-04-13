@@ -110,7 +110,7 @@ export default function LoginPage() {
           <p className="font-sans text-[12px] font-normal text-center">
             Belum mengaktifkan akun?{" "}
             <a
-              href={"/" + data.noHaveAccountRef}
+              href={"/onboarding"}
               className="text-[#F31313] outline-none"
             >
               Aktifkan

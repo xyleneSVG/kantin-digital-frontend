@@ -3,7 +3,7 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const res = await fetch(
-      "https://ta-dev.subekti.web.id/api/method/kantin_stemba.api.auth.customer_login",
+      "https://ta-dev.subekti.web.id/api/method/kantin_stemba.api.auth.check_customer_activation",
       {
         method: "POST",
         headers: {
@@ -11,18 +11,16 @@ export async function POST(req: Request) {
         },
         body: JSON.stringify({
           nis: body.nis,
-          password: body.password,
         }),
-      },
+      }
     );
 
     const data = await res.json();
-
     return Response.json(data, { status: res.status });
   } catch (err) {
     return Response.json(
       { message: "Proxy error", error: String(err) },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

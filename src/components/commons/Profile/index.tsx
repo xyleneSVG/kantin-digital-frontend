@@ -1,15 +1,30 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Container, HeaderWithBackButtonComponent } from "@/src/components/ui";
 import { ASSETS } from "@/src/constants/assets";
-import {
-  Info,
-  LogOut,
-  ScrollText,
-  UserSearch,
-} from "lucide-react";
+import { Info, LogOut, ScrollText, UserSearch } from "lucide-react";
 import { IdentityComponent } from "./Identity";
 import { SelectionItemComponent } from "./SelectionItem";
+import { logoutUser } from "@/src/services/auth";
 
 export default function ProfilePage() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      
+      // Setelah localStorage bersih, gunakan router.replace agar user 
+      // tidak bisa menekan tombol "Back" di browser untuk kembali ke profil
+      router.replace("/login"); 
+    } catch (error) {
+      console.error("Gagal melakukan logout", error);
+      // Tetap paksa ke login jika error
+      router.replace("/login");
+    }
+  };
+
   return (
     <div className="bg-background-dark h-screen">
       <HeaderWithBackButtonComponent
@@ -41,12 +56,13 @@ export default function ProfilePage() {
             href="/about"
           />
         </div>
+        
         <SelectionItemComponent
-          className="text-[#FF0000]"
+          className="text-[#FF0000] cursor-pointer"
           useChevron={false}
           icon={LogOut}
           title="Keluar"
-          href="/about"
+          onClick={handleLogout}
         />
       </Container>
     </div>
