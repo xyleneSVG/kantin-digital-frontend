@@ -138,18 +138,14 @@ export const changePassword = async (currentPass: string, newPass: string, confi
     if (!res.ok || json.meta?.code !== 1000) {
       let errorMessage = json.meta?.message || "Gagal mengubah password.";
 
-      // 1. Tangkap error bawaan Frappe yang biasanya berbentuk HTML
       if (json._server_messages) {
         try {
           const serverMsgs = JSON.parse(json._server_messages);
           const msgObj = JSON.parse(serverMsgs[0]);
-          // Bersihkan semua tag HTML menjadi spasi lalu dirapikan
           errorMessage = msgObj.message.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
         } catch(e) {
-          // Lanjut jika gagal parse
         }
       } 
-      // 2. Tangkap error lain (seperti Pydantic)
       else if (json.error && typeof json.error === "string") {
         errorMessage = json.error.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
       }
@@ -157,7 +153,7 @@ export const changePassword = async (currentPass: string, newPass: string, confi
       throw {
         type: "error",
         title: "Validation Error",
-        message: errorMessage, // Ini sekarang berisi bahasa Inggris murni tanpa HTML
+        message: errorMessage,
       };
     }
 
@@ -169,20 +165,16 @@ export const changePassword = async (currentPass: string, newPass: string, confi
 
 export const logoutUser = async () => {
   try {
-    // Panggil API logout untuk membersihkan session di backend
     await fetch("/api/logout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     });
 
-    // Wajib: Hapus kredensial dari local storage
     localStorage.removeItem("api_key");
     localStorage.removeItem("api_secret");
 
     return true;
   } catch (err) {
-    // Sekalipun API gagal (misal server down), kita tetap paksa hapus local storage
-    // agar user tidak terjebak tidak bisa logout di aplikasi
     localStorage.removeItem("api_key");
     localStorage.removeItem("api_secret");
     throw err;

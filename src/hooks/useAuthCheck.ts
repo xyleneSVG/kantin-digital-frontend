@@ -15,13 +15,10 @@ export const useAuthCheck = () => {
   const { currentUser, isLoading } = useFrappeAuth();
 
   useEffect(() => {
-    // Tunggu Frappe selesai cek session utamanya
     if (isLoading) return;
 
-    // CEK TAMBAHAN: Periksa apakah token hasil login manual ada di localStorage
     const hasToken = typeof window !== "undefined" ? !!localStorage.getItem("api_key") : false;
 
-    // User dianggap login jika currentUser (Frappe) ada ATAU token (localStorage) ada
     const isLoggedIn = !!currentUser || hasToken;
     
     const isPublicPath = PUBLIC_PATHS.includes(pathname);

@@ -21,7 +21,6 @@ export default function ActivityPage() {
       >
         <TabComponent activeTab={activeTab} onChangeTab={setActiveTab} />
 
-        {/* contoh penggunaan */}
         <div className="p-4 text-sm">
           {activeTab === "Antrean" && <p>Ini halaman Antrean</p>}
           {activeTab === "Riwayat" && <p>Ini halaman Riwayat</p>}

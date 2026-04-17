@@ -27,10 +27,8 @@ export default function OnBoardingPage() {
   const [direction, setDirection] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Menyimpan input user (misal: nis, email)
   const [form, setForm] = useState<Record<string, string>>({});
 
-  // State untuk modal error
   const [errorState, setErrorState] = useState({
     isOpen: false,
     title: "",
@@ -45,32 +43,24 @@ export default function OnBoardingPage() {
   };
 
   const handleNextStep = async () => {
-    // Pastikan kita berada di step input yang tipenya 'single'
     if (stepData.buttonType === "single") {
       
-      // CEK: Apakah ini step input Nomor Identitas (NIS)?
       if (stepData.inputName === "identityNumber") {
         const nis = form["identityNumber"];
         
-        if (!nis) return; // Jangan lanjut kalau kosong
+        if (!nis) return;
 
         setIsLoading(true);
         try {
-          // 1. Panggil API pengecekan aktivasi
           const res = await checkCustomerActivation(nis);
 
-          // LOGIKA: Kalau SUDAH AKTIF (misal flag-nya 'active' atau 'is_active')
-          // Sesuaikan 'res.is_active' dengan property asli dari API-mu
           if (res.is_active || res.activated) { 
-            // Tendang ke halaman login
             router.push("/login");
             return; 
           }
 
-          // Kalau BELUM AKTIF, lanjut ke step onboarding berikutnya (misal isi email)
           proceedNext();
         } catch (err: any) {
-          // Jika error (misal NIS tidak terdaftar), tampilkan di modal
           showError(err);
         } finally {
           setIsLoading(false);
@@ -78,12 +68,10 @@ export default function OnBoardingPage() {
         return;
       }
 
-      // Jika ini step 'single' tapi BUKAN NIS (misal step isi email)
       proceedNext();
       return;
     }
 
-    // Jika ini step 'double' (pilihan metode aktivasi), ditangani oleh handleFinalActivation
   };
 
   const handleFinalActivation = async (methodVariantText: string) => {
@@ -94,10 +82,8 @@ export default function OnBoardingPage() {
     try {
       await activateAccount(nis, method);
       
-      // SET PENANDA: Tandai bahwa user baru saja aktivasi
       localStorage.setItem("first_time_activation", "true");
       
-      // Jika berhasil, redirect ke login
       router.push("/login"); 
     } catch (err: any) {
       showError(err);
@@ -227,7 +213,6 @@ export default function OnBoardingPage() {
         </div>
       </Container>
 
-      {/* Tambahkan Modal Sama Seperti di Login */}
       <ModalComponent
         isOpen={errorState.isOpen}
         type={"error"}
