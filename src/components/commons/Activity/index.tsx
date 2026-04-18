@@ -15,6 +15,7 @@ const ANTREAN_DATA = [
     qty: 2,
     price: "10.000",
     date: "16 Maret, 16 : 00",
+    idPesanan: "ORD-5G9K2XQ1",
   },
   {
     id: 2,
@@ -25,6 +26,7 @@ const ANTREAN_DATA = [
     qty: 1,
     price: "3.000",
     date: "17 Maret, 19 : 00",
+        idPesanan: "ORD-5G9K2XQ1",
   },
 ];
 

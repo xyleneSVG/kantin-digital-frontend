@@ -1,5 +1,6 @@
 import ActivityPage from "./Activity";
 import AuthWrapper from "./AuthWrapper";
+import DetailPesananPage from "./DetailOrder";
 import FrappeProviderWrapper from "./FrappeProviderWrapper";
 import HomePage from "./Home";
 import LoginPage from "./Login";
@@ -20,4 +21,5 @@ export {
   ProfilePage,
   NotificationsPage,
   ActivityPage,
+  DetailPesananPage
 };
