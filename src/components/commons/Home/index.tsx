@@ -31,7 +31,6 @@ export default function HomePage() {
   }, []);
 
   const handleChangePassword = async () => {
-    // Validasi basic
     if (!passwords.current) {
       setErrorMsg("Password saat ini wajib diisi!");
       return;
@@ -51,7 +50,6 @@ export default function HomePage() {
     try {
       await changePassword(passwords.current, passwords.new, passwords.confirm);
 
-      // Jika sukses, hapus flag dari localStorage
       localStorage.removeItem("first_time_activation");
       setShowPasswordModal(false);
     } catch (err: any) {
@@ -97,7 +95,6 @@ export default function HomePage() {
         />
       </Container>
 
-      {/* MODAL GANTI PASSWORD FIRST TIME */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
@@ -127,7 +124,6 @@ export default function HomePage() {
               />
             </div>
 
-            {/* Area Error Message */}
             {errorMsg && (
               <p className="mb-4 text-center text-sm font-medium italic text-red-500">
                 "{errorMsg}"
