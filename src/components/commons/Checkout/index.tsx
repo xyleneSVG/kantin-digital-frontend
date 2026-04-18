@@ -97,7 +97,7 @@ export default function CheckoutPage() {
         </div>
       </Container>
 
-      <div className="absolute bottom-0 left-0 right-0 bg-[#EFEFEF] rounded-t-2xl p-4 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-20">
+      <div className="absolute bottom-14 left-0 right-0 bg-secondary rounded-t-2xl px-4 pb-9 pt-4 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-20">
         <div className="flex flex-col">
           <p className="text-[12px] text-gray-800 font-medium mb-0.5">Total Bayar</p>
           <p className="text-[18px] font-bold text-[#6BBA9C]">Rp {formatRupiah(total > 0 ? total : 0)}</p>
