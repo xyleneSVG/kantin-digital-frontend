@@ -1,8 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ArrowLeft, ShoppingCart, MapPin, ChevronDown, ChevronUp, Clock } from "lucide-react";
-import { useCartStore } from "@/src/store/useCartStore";
+import { ArrowLeft, MapPin, ChevronDown, ChevronUp, Clock } from "lucide-react";
 
 export type KantinHeaderProps = {
   kantinName: string;
@@ -19,7 +20,6 @@ export default function KantinHeader({
 }: KantinHeaderProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const cartCount = useCartStore((state) => state.cartCount);
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -32,19 +32,7 @@ export default function KantinHeader({
         <div className="absolute top-0 flex w-full justify-between p-4 pt-6">
           <button onClick={() => router.back()} className="flex size-8 items-center justify-center rounded-full border border-white bg-transparent text-white backdrop-blur-sm">
             <ArrowLeft size={18} />
-          </button>
-          
-          <button 
-            onClick={() => router.push('/kantin/123/checkout')} 
-            className="relative flex size-8 items-center justify-center rounded-full bg-white text-[#6BBA9C]"
-          >
-            <ShoppingCart size={18} />
-            {cartCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
-                {cartCount}
-              </span>
-            )}
-          </button>
+          </button> 
         </div>
       </div>
 

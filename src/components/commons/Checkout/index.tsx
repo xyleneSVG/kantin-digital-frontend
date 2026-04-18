@@ -31,7 +31,7 @@ export default function CheckoutPage() {
       <Container
         needPadding={false}
         type="round"
-        className="bg-white min-h-[calc(100vh-69px)] pt-6 pb-36 flex flex-col overflow-y-auto"
+        className="bg-white min-h-[calc(100vh-69px)] pt-6 pb-40 flex flex-col overflow-y-auto"
       >
         <div className="px-4 flex flex-col flex-1">
           
@@ -97,12 +97,12 @@ export default function CheckoutPage() {
         </div>
       </Container>
 
-      <div className="absolute bottom-14 left-0 right-0 bg-secondary rounded-t-2xl px-4 pb-9 pt-4 flex items-center justify-between shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-20">
+      <div className="fixed bottom-17.5 left-0 right-0 mx-auto w-full max-w-md bg-secondary rounded-t-2xl px-4 py-4 flex items-center justify-between shadow-[0_-10px_20px_rgba(0,0,0,0.05)] z-50">
         <div className="flex flex-col">
           <p className="text-[12px] text-gray-800 font-medium mb-0.5">Total Bayar</p>
           <p className="text-[18px] font-bold text-[#6BBA9C]">Rp {formatRupiah(total > 0 ? total : 0)}</p>
         </div>
-        <button className="bg-[#6BBA9C] text-white px-6 py-2.5 rounded-lg text-[14px] font-semibold hover:bg-[#5aa387] transition-colors">
+        <button className="bg-[#6BBA9C] text-white px-6 py-2.5 rounded-lg text-[14px] font-semibold hover:bg-[#5aa387] transition-colors shadow-md">
           Pesan Sekarang
         </button>
       </div>

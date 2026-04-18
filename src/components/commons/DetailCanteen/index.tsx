@@ -4,6 +4,8 @@ import KantinHeader from "./CanteenHeader";
 import BestMenuCard from "./BestMenuCard";
 import MenuItemList from "./MenuItemList";
 import { useCartStore } from "@/src/store/useCartStore";
+import { useRouter } from "next/navigation";
+import { ShoppingCart } from "lucide-react";
 
 const DATA = {
   kantin: {
@@ -66,15 +68,18 @@ const DATA = {
 };
 
 export default function DetailCanteenPage() {
+  const router = useRouter();
   const addToCart = useCartStore((state) => state.addToCart);
+  const cartCount = useCartStore((state) => state.cartCount);
 
   return (
-    <div className="min-h-screen bg-white pb-24 font-sans">
+    <div className="min-h-screen bg-white pb-24 font-sans relative">
       <KantinHeader
         kantinName={DATA.kantin.name}
         location={DATA.kantin.location}
         coverImage={DATA.kantin.cover}
       />
+      
       <div className="flex flex-col px-4">
         <section className="mb-6">
           <h2 className="mb-3 text-[16px] font-bold text-gray-900">
@@ -117,6 +122,20 @@ export default function DetailCanteenPage() {
           </div>
         </section>
       </div>
+
+      {cartCount > 0 && (
+        <button
+          onClick={() => router.push('/kantin/123/checkout')}
+          className="fixed bottom-25 right-5 z-50 flex size-14 items-center justify-center rounded-full bg-[#6BBA9C] text-white shadow-[0_4px_15px_rgba(107,186,156,0.5)] transition-transform hover:scale-105 active:scale-95"
+        >
+          <div className="relative flex items-center justify-center">
+            <ShoppingCart size={24} />
+            <span className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full bg-red-500 text-[11px] font-bold text-white border-2 border-white">
+              {cartCount}
+            </span>
+          </div>
+        </button>
+      )}
     </div>
   );
 }
