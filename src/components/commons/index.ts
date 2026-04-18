@@ -1,5 +1,7 @@
 import ActivityPage from "./Activity";
 import AuthWrapper from "./AuthWrapper";
+import CheckoutPage from "./Checkout";
+import DetailCanteenPage from "./DetailCanteen";
 import DetailPesananPage from "./DetailOrder";
 import FrappeProviderWrapper from "./FrappeProviderWrapper";
 import HomePage from "./Home";
@@ -21,5 +23,7 @@ export {
   ProfilePage,
   NotificationsPage,
   ActivityPage,
-  DetailPesananPage
+  DetailPesananPage,
+  DetailCanteenPage,
+  CheckoutPage,
 };

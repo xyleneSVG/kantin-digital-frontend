@@ -67,19 +67,19 @@ export const DATA: DataType = {
     headerImage: ASSETS.HOME.HEADER,
     canteenRecommendation: [
       {
-        id: "/kantinJono12345",
+        id: "/kantin/12345",
         image: ASSETS.HOME.KANTIN.A,
         name: "Kantin Jono",
         rating: 4.9,
       },
       {
-        id: "/kantinBorak321",
+        id: "/kantin/321",
         image: ASSETS.HOME.KANTIN.B,
         name: "Kantin Borak",
         rating: 4.9,
       },
       {
-        id: "/kantinCocop555",
+        id: "/kantin/555",
         image: ASSETS.HOME.KANTIN.C,
         name: "Kantin Cocop",
         rating: 4.9,
@@ -157,6 +157,6 @@ export const DATA: DataType = {
         name: "Menu D",
         rating: 4.9,
       },
-    ]
+    ],
   },
 };
