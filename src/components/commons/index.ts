@@ -9,6 +9,7 @@ import LoginPage from "./Login";
 import { NavbarComponent } from "./Navbar";
 import NotificationsPage from "./Notifications";
 import OnBoardingPage from "./Onboarding";
+import PaymentPage from "./Payment";
 import ProfilePage from "./Profile";
 import SplashScreen from "./SplashScreen";
 
@@ -26,4 +27,5 @@ export {
   DetailPesananPage,
   DetailCanteenPage,
   CheckoutPage,
+  PaymentPage
 };

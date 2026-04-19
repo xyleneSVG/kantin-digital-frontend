@@ -4,7 +4,7 @@ import KantinHeader from "./CanteenHeader";
 import BestMenuCard from "./BestMenuCard";
 import MenuItemList from "./MenuItemList";
 import { useCartStore } from "@/src/store/useCartStore";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 
 const DATA = {
@@ -69,8 +69,11 @@ const DATA = {
 
 export default function DetailCanteenPage() {
   const router = useRouter();
+  const params = useParams();
+  const canteenId = params.id as string;
+
   const addToCart = useCartStore((state) => state.addToCart);
-  const cartCount = useCartStore((state) => state.cartCount);
+  const cartCount = useCartStore((state) => state.carts[canteenId]?.count || 0);
 
   return (
     <div className="min-h-screen bg-white pb-24 font-sans relative">
@@ -90,7 +93,7 @@ export default function DetailCanteenPage() {
               <BestMenuCard 
                 key={item.id} 
                 {...item} 
-                onAdd={() => addToCart({ id: item.id, title: item.title, price: item.price, image: item.image })} 
+                onAdd={() => addToCart(canteenId, { id: item.id, title: item.title, price: item.price, image: item.image })} 
               />
             ))}
           </div>
@@ -103,7 +106,7 @@ export default function DetailCanteenPage() {
               <MenuItemList 
                 key={item.id} 
                 {...item} 
-                onAdd={() => addToCart({ id: item.id, title: item.title, price: item.price, image: item.image })} 
+                onAdd={() => addToCart(canteenId, { id: item.id, title: item.title, price: item.price, image: item.image })} 
               />
             ))}
           </div>
@@ -116,7 +119,7 @@ export default function DetailCanteenPage() {
               <MenuItemList 
                 key={item.id} 
                 {...item} 
-                onAdd={() => addToCart({ id: item.id, title: item.title, price: item.price, image: item.image })} 
+                onAdd={() => addToCart(canteenId, { id: item.id, title: item.title, price: item.price, image: item.image })} 
               />
             ))}
           </div>
@@ -125,7 +128,7 @@ export default function DetailCanteenPage() {
 
       {cartCount > 0 && (
         <button
-          onClick={() => router.push('/kantin/123/checkout')}
+          onClick={() => router.push(`/kantin/${canteenId}/checkout`)}
           className="fixed bottom-25 right-5 z-50 flex size-14 items-center justify-center rounded-full bg-[#6BBA9C] text-white shadow-[0_4px_15px_rgba(107,186,156,0.5)] transition-transform hover:scale-105 active:scale-95"
         >
           <div className="relative flex items-center justify-center">

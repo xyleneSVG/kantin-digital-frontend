@@ -1,12 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { Minus, Plus, Ticket } from "lucide-react";
+import { useParams } from "next/navigation";
+import { Minus, Plus } from "lucide-react";
 import { Container, HeaderWithBackButtonComponent } from "@/src/components/ui";
 import { useCartStore } from "@/src/store/useCartStore";
 
 export default function CheckoutPage() {
-  const { cartItems, increaseQty, decreaseQty } = useCartStore();
+  const params = useParams();
+  const canteenId = params.id as string;
+
+  const cart = useCartStore((state) => state.carts[canteenId] || { items: [], count: 0 });
+  const cartItems = cart.items;
+  const increaseQty = useCartStore((state) => state.increaseQty);
+  const decreaseQty = useCartStore((state) => state.decreaseQty);
 
   const subtotal = cartItems.reduce((acc, item) => {
     const priceNum = parseInt(item.price.replace(/[^0-9]/g, ''));
@@ -55,14 +62,14 @@ export default function CheckoutPage() {
 
                 <div className="flex items-center gap-x-3">
                   <button 
-                    onClick={() => decreaseQty(item.id)}
+                    onClick={() => decreaseQty(canteenId, item.id)}
                     className="flex size-6 items-center justify-center rounded-md border border-gray-300 bg-transparent text-gray-700"
                   >
                     <Minus size={14} />
                   </button>
                   <span className="text-[14px] font-semibold text-gray-900">{item.qty}</span>
                   <button 
-                    onClick={() => increaseQty(item.id)}
+                    onClick={() => increaseQty(canteenId, item.id)}
                     className="flex size-6 items-center justify-center rounded-md bg-[#6BBA9C] text-white"
                   >
                     <Plus size={14} />
