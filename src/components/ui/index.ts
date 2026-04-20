@@ -8,6 +8,7 @@ import { InputSearchComponent } from "./InputSearch";
 import { CardMenuComponent } from "./CardMenu";
 import { HeaderWithBackButtonComponent } from "./HeaderWithBackButton";
 import { ModalComponent } from "./Modal";
+import { MenuDrawerModalComponent } from "./MenuDrawerModal";
 
 export {
   Container,
@@ -19,5 +20,6 @@ export {
   InputSearchComponent,
   CardMenuComponent,
   HeaderWithBackButtonComponent,
-  ModalComponent
+  ModalComponent,
+  MenuDrawerModalComponent
 };

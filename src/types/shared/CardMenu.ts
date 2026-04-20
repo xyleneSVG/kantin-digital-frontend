@@ -4,4 +4,5 @@ export type CardMenuItem = {
   name: string;
   rating?: number;
   price?: number;
+  kantinId?: string;
 };

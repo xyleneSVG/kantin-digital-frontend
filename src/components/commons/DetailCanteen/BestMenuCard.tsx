@@ -1,31 +1,41 @@
 import Image from "next/image";
-import { MenuItemType } from "@/src/types/DetailCanteen";
+import { Plus } from "lucide-react";
+import React from "react";
 
-type BestMenuCardProps = MenuItemType & {
-  onAdd: () => void;
-};
+interface BestMenuProps {
+  id: string;
+  title: string;
+  price: string;
+  image: string;
+  onClick?: () => void;
+  onAdd: (e: React.MouseEvent) => void;
+}
 
 export default function BestMenuCard({
   title,
   price,
   image,
+  onClick,
   onAdd,
-}: BestMenuCardProps) {
+}: BestMenuProps) {
   return (
-    <div className="bg-secondary flex min-w-30 flex-col rounded-xl">
-      <div className="relative h-18 w-full overflow-hidden rounded-t-lg">
+    <div
+      onClick={onClick}
+      className="flex min-w-[140px] cursor-pointer flex-col rounded-2xl bg-[#F5F3EC] p-3 shadow-sm transition-transform active:scale-[0.98]"
+    >
+      <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-xl">
         <Image src={image} alt={title} fill className="object-cover" />
       </div>
-      <div className="p-2">
-        <div className="mt-2 flex flex-col gap-y-1">
-          <p className="text-[13px] font-medium text-gray-800">{title}</p>
-          <p className="text-[12px] font-semibold text-[#6BBA9C]">Rp {price}</p>
-        </div>
+      
+      <h3 className="text-[13px] font-bold text-gray-900">{title}</h3>
+      
+      <div className="mt-2 flex items-center justify-between">
+        <p className="text-[13px] font-bold text-[#6BBA9C]">Rp {price}</p>
         <button
           onClick={onAdd}
-          className="mt-3 w-full rounded-md bg-[#6BBA9C] py-1 text-white transition-all hover:bg-[#5aa387] active:scale-95"
+          className="flex size-6 items-center justify-center rounded-full bg-[#6BBA9C] text-white active:scale-95"
         >
-          +
+          <Plus size={14} />
         </button>
       </div>
     </div>

@@ -134,27 +134,31 @@ export const DATA: DataType = {
     ],
     bestChoice: [
       {
-        id: "/kantin-a",
+        id: "123", // Harus sama dengan id menu di detail kantin
+        kantinId: "12345", // Menuju Kantin Jono
         image: ASSETS.HOME.MENU.A,
+        name: "Paket A",
+        rating: 4.9,
+      },
+      {
+        id: "321", // Harus sama dengan id menu di detail kantin
+        kantinId: "321", // Menuju Kantin Borak
+        image: ASSETS.HOME.MENU.B,
+        name: "Paket B",
+        rating: 4.9,
+      },
+      {
+        id: "m1", // Harus sama dengan id menu di detail kantin
+        kantinId: "555", // Menuju Kantin Cocop
+        image: ASSETS.HOME.MENU.C,
         name: "Menu A",
         rating: 4.9,
       },
       {
-        id: "/kantin-b",
-        image: ASSETS.HOME.MENU.B,
-        name: "Menu B",
-        rating: 4.9,
-      },
-      {
-        id: "/kantin-c",
+        id: "d1", // Harus sama dengan id menu di detail kantin
+        kantinId: "12345", // Menuju Kantin Jono
         image: ASSETS.HOME.MENU.C,
-        name: "Menu C",
-        rating: 4.9,
-      },
-      {
-        id: "/kantin-d",
-        image: ASSETS.HOME.MENU.C,
-        name: "Menu D",
+        name: "Minuman A",
         rating: 4.9,
       },
     ],
