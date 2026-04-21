@@ -6,7 +6,6 @@ import { cn } from "@/src/lib/utils";
 interface Props {
   variant: "default" | "type2" | "type3";
   item: {
-    id: string;
     image: string;
     name: string;
     rating?: number;
@@ -16,7 +15,7 @@ interface Props {
 export function CardMenuComponent({ item, variant }: Props) {
   return (
     <Link
-      href={item.id}
+      href={"kantin/"+item.name}
       className={cn(
         "flex w-full overflow-hidden",
         variant === "default" && "flex-row items-center gap-x-3.5 rounded-sm bg-secondary px-3 py-1.5",
@@ -73,7 +72,7 @@ export function CardMenuComponent({ item, variant }: Props) {
             "text-[12px]",
             variant === "type3" && "text-[12px]"
           )}>
-            {item.rating}/5.0
+            {item.rating || 0}/5.0 
           </p>
         </div>
       </div>
