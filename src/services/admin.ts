@@ -77,3 +77,19 @@ export const getMenuDetail = async (payload: any) => {
 
   return data;
 };
+
+export async function createMenu(payload: any) {
+  const res = await fetch("/api/admin/menu/create", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await res.text();
+
+  if (!res.ok) {
+    console.error("ERROR RESPONSE:", text);
+    throw new Error("Request gagal");
+  }
+
+  return text ? JSON.parse(text) : { success: true };
+}

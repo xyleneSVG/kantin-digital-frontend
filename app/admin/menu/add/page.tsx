@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/src/components/ui/og-button";
 import {
   Card,
@@ -11,19 +11,25 @@ import {
 } from "@/src/components/ui/card";
 import { ArrowLeft, Upload, Plus, X } from "lucide-react";
 import Link from "next/link";
+import { createMenu } from "@/src/services/admin";
 
 export default function AddMenuPage() {
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
   const [formData, setFormData] = useState({
     namaItem: "",
     grupItem: "Makanan Utama",
     hargaJual: "",
     deskripsi: "",
-    tersedia: true,
+    tersedia: false,
     uom: "pcs",
     kuantitasUom: 1,
   });
 
   const [conversions, setConversions] = useState<any[]>([]);
+  const [image, setImage] = useState("");
+  const [base64Image, setBase64Image] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -39,23 +45,63 @@ export default function AddMenuPage() {
   };
 
   const handleAddConversion = () => {
-    setConversions([...conversions, { dari: "pcs", ke: "", jumlah: 1 }]);
+    setConversions([...conversions, { dari: formData.uom, ke: "", jumlah: 1 }]);
   };
 
   const handleRemoveConversion = (idx: number) => {
     setConversions(conversions.filter((_, i) => i !== idx));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleConversionChange = (idx: number, field: string, value: any) => {
+    const updated = [...conversions];
+    updated[idx][field] = value;
+    setConversions(updated);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form data:", formData);
-    console.log("Conversions:", conversions);
-    // Handle form submission
+    setIsSubmitting(true);
+
+    try {
+      const api_key = localStorage.getItem("api_key");
+      const api_secret = localStorage.getItem("api_secret");
+      const company = localStorage.getItem("company");
+
+      const payload: any = {
+        api_key,
+        api_secret,
+        item_name: formData.namaItem,
+        item_group: formData.grupItem,
+        stock_uom: formData.uom,
+        uoms: [
+          {
+            uom: formData.uom,
+            conversion_factor: Number(formData.kuantitasUom),
+          },
+          ...conversions.map((c) => ({
+            uom: c.ke,
+            conversion_factor: Number(c.jumlah),
+          })),
+        ],
+        is_stock_item: formData.tersedia,
+        selling_price: Number(formData.hargaJual),
+        company,
+      };
+
+      if (base64Image) {
+        payload.image = base64Image;
+      }
+
+      await createMenu(payload);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Header */}
       <header className="border-border bg-card border-b">
         <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
           <Link href="/admin/menu">
@@ -73,10 +119,8 @@ export default function AddMenuPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Basic Info */}
           <Card>
             <CardHeader>
               <CardTitle>Informasi Dasar</CardTitle>
@@ -108,12 +152,11 @@ export default function AddMenuPage() {
                     value={formData.grupItem}
                     onChange={handleInputChange}
                     className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
+                    required
                   >
-                    <option value="Makanan Utama">Makanan Utama</option>
                     <option value="Minuman">Minuman</option>
-                    <option value="Gorengan">Gorengan</option>
-                    <option value="Snack">Snack</option>
-                    <option value="Dessert">Dessert</option>
+                    <option value="Minuman">Minuman</option>
+                    <option value="Camilan">Camilan</option>
                   </select>
                 </div>
 
@@ -135,7 +178,7 @@ export default function AddMenuPage() {
 
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Deskripsi
+                  Deskripsi*
                 </label>
                 <textarea
                   name="deskripsi"
@@ -144,19 +187,22 @@ export default function AddMenuPage() {
                   placeholder="Deskripsi lengkap menu..."
                   rows={4}
                   className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
+                  required
                 />
               </div>
             </CardContent>
           </Card>
 
-          {/* Image Upload */}
           <Card>
             <CardHeader>
               <CardTitle>Foto Menu</CardTitle>
               <CardDescription>Upload gambar untuk menu</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="border-primary/30 hover:border-primary/50 cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors">
+              <div
+                onClick={() => fileRef.current?.click()}
+                className="border-primary/30 hover:border-primary/50 cursor-pointer rounded-lg border-2 border-dashed p-8 text-center transition-colors"
+              >
                 <Upload className="text-primary/50 mx-auto mb-3 h-12 w-12" />
                 <p className="text-foreground mb-1 font-medium">
                   Klik untuk upload atau drag & drop
@@ -164,11 +210,32 @@ export default function AddMenuPage() {
                 <p className="text-muted-foreground text-sm">
                   PNG, JPG hingga 5MB
                 </p>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      setBase64Image(reader.result as string);
+                      setImage(reader.result as string);
+                    };
+                    reader.readAsDataURL(file);
+                  }}
+                />
+                {image && (
+                  <img
+                    src={image}
+                    className="mx-auto mt-3 h-32 object-contain"
+                  />
+                )}
               </div>
             </CardContent>
           </Card>
 
-          {/* Availability & Stock */}
           <Card>
             <CardHeader>
               <CardTitle>Ketersediaan & Stok</CardTitle>
@@ -181,6 +248,7 @@ export default function AddMenuPage() {
                   checked={formData.tersedia}
                   onChange={handleInputChange}
                   className="border-border h-4 w-4 rounded"
+                  required
                 />
                 <label className="text-foreground text-sm font-medium">
                   Item tersedia untuk dijual?
@@ -192,7 +260,6 @@ export default function AddMenuPage() {
             </CardContent>
           </Card>
 
-          {/* Unit of Measurement */}
           <Card>
             <CardHeader>
               <CardTitle>Unit Pengukuran (UOM)</CardTitle>
@@ -209,6 +276,7 @@ export default function AddMenuPage() {
                     value={formData.uom}
                     onChange={handleInputChange}
                     className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
+                    required
                   >
                     <option value="pcs">Pcs</option>
                     <option value="gram">Gram</option>
@@ -229,11 +297,11 @@ export default function AddMenuPage() {
                     onChange={handleInputChange}
                     className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
                     min="1"
+                    required
                   />
                 </div>
               </div>
 
-              {/* Conversions */}
               <div className="border-border border-t pt-4">
                 <div className="mb-4">
                   <h4 className="text-foreground mb-3 font-medium">
@@ -252,6 +320,7 @@ export default function AddMenuPage() {
                               value={conv.dari}
                               readOnly
                               className="border-border bg-muted w-full rounded border px-3 py-2"
+                              required
                             />
                           </div>
                           <div className="flex-1">
@@ -260,8 +329,17 @@ export default function AddMenuPage() {
                             </label>
                             <input
                               type="text"
+                              value={conv.ke}
+                              onChange={(e) =>
+                                handleConversionChange(
+                                  idx,
+                                  "ke",
+                                  e.target.value,
+                                )
+                              }
                               placeholder="Contoh: gram"
                               className="border-border focus:ring-primary/50 w-full rounded border px-3 py-2 focus:ring-2 focus:outline-none"
+                              required
                             />
                           </div>
                           <div className="flex-1">
@@ -271,8 +349,16 @@ export default function AddMenuPage() {
                             <input
                               type="number"
                               value={conv.jumlah}
+                              onChange={(e) =>
+                                handleConversionChange(
+                                  idx,
+                                  "jumlah",
+                                  e.target.value,
+                                )
+                              }
                               className="border-border focus:ring-primary/50 w-full rounded border px-3 py-2 focus:ring-2 focus:outline-none"
                               min="1"
+                              required
                             />
                           </div>
                           <button
@@ -301,7 +387,6 @@ export default function AddMenuPage() {
             </CardContent>
           </Card>
 
-          {/* Submit */}
           <div className="flex gap-3 pt-4">
             <Link href="/admin/menu" className="flex-1">
               <Button variant="outline" className="w-full">
@@ -310,9 +395,10 @@ export default function AddMenuPage() {
             </Link>
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
             >
-              Simpan Menu
+              {isSubmitting ? "Loading..." : "Simpan Menu"}
             </Button>
           </div>
         </form>
