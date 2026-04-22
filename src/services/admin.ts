@@ -93,3 +93,34 @@ export async function createMenu(payload: any) {
 
   return text ? JSON.parse(text) : { success: true };
 }
+
+export const getSalesInvoices = async ({
+  page = 1,
+  per_page = 10,
+}: {
+  page?: number;
+  per_page?: number;
+}) => {
+  const apiKey = localStorage.getItem("api_key");
+  const apiSecret = localStorage.getItem("api_secret");
+  const company = localStorage.getItem("company") || "";
+
+  const res = await fetch(
+    `/api/admin/sales-invoice?page=${page}&per_page=${per_page}&canteen=${encodeURIComponent(company)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `token ${apiKey}:${apiSecret}`,
+      },
+    },
+  );
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.meta?.message || "Gagal mengambil data");
+  }
+
+  return json;
+};
