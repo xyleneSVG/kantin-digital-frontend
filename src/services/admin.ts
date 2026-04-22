@@ -152,3 +152,58 @@ export const getSalesInvoiceDetail = async (sales_invoice_id: string) => {
     throw err;
   }
 };
+
+export interface PurchaseInvoice {
+  purchase_id: string;
+  supplier: string;
+  purchase_date: string;
+  total_amount: number;
+  status: string;
+  company: string;
+}
+
+export const getPurchaseInvoices = async ({
+  search = "",
+  page = 1,
+  per_page = 10,
+  canteen = "",
+}: {
+  search?: string;
+  page?: number;
+  per_page?: number;
+  canteen?: string;
+}): Promise<PurchaseInvoice[]> => {
+  try {
+    const apiKey = localStorage.getItem("api_key");
+    const apiSecret = localStorage.getItem("api_secret");
+
+    const res = await fetch(
+      `/api/admin/purchase-invoice?search=${encodeURIComponent(search)}&page=${page}&per_page=${per_page}&canteen=${encodeURIComponent(canteen)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `token ${apiKey}:${apiSecret}`,
+        },
+      },
+    );
+
+    const json = await res.json();
+
+    if (!res.ok) {
+      throw new Error(json?.meta?.message || "Gagal mengambil data");
+    }
+
+    return (json.data?.invoices || []).map((item: any) => ({
+      purchase_id: item.name,
+      supplier: item.supplier,
+      purchase_date: item.posting_date,
+      total_amount: item.grand_total,
+      status: item.status,
+      company: item.company,
+    }));
+  } catch (error) {
+    console.error("Purchase Invoice Service Error:", error);
+    return [];
+  }
+};

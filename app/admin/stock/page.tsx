@@ -1,234 +1,165 @@
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { Button } from '@/src/components/ui/og-button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { Plus, Trash2, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
+import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/src/components/ui/card";
+import { Button } from "@/src/components/ui/og-button";
+import { Input } from "@/src/components/ui/og-input";
+import { Eye, Package, Search } from "lucide-react";
+import Link from "next/link";
+import ScreenLoader from "@/src/hooks/useScreenLoader";
+import { getPurchaseInvoices, PurchaseInvoice } from "@/src/services/admin";
 
-interface StockItem {
-  id: string
-  namaItem: string
-  jumlah: number
-  uom: string
-  harga: number
-  supplier: string
-}
+export default function StockListPage() {
+  const [purchases, setPurchases] = useState<PurchaseInvoice[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [canteen] = useState("Kantin Mak Cor");
 
-const suppliers = ['CV. Segar Jaya', 'PT. Maju Mundur', 'Toko Distribusi Arum', 'UD. Berkah']
-const items = ['Ayam', 'Beras', 'Minyak Goreng', 'Garam', 'Gula', 'Telur', 'Tahu', 'Tempe']
-const uomOptions = ['kg', 'gram', 'liter', 'pcs', 'box', 'sak']
+  const loadData = async (query = "") => {
+    setLoading(true);
 
-export default function StockPage() {
-  const [supplier, setSupplier] = useState('CV. Segar Jaya')
-  const [tanggal, setTanggal] = useState(new Date().toISOString().split('T')[0])
-  const [stockItems, setStockItems] = useState<StockItem[]>([
-    {
-      id: '1',
-      namaItem: 'Ayam',
-      jumlah: 10,
-      uom: 'kg',
-      harga: 50000,
-      supplier: 'CV. Segar Jaya',
-    }
-  ])
+    const data = await getPurchaseInvoices({
+      search: query,
+      canteen,
+      page: 1,
+      per_page: 10,
+    });
 
-  const handleAddItem = () => {
-    const newItem: StockItem = {
-      id: Date.now().toString(),
-      namaItem: items[0],
-      jumlah: 0,
-      uom: 'kg',
-      harga: 0,
-      supplier: supplier,
-    }
-    setStockItems([...stockItems, newItem])
-  }
+    setPurchases(data);
+    setLoading(false);
+  };
 
-  const handleRemoveItem = (id: string) => {
-    setStockItems(stockItems.filter(item => item.id !== id))
-  }
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const handleItemChange = (id: string, field: string, value: any) => {
-    setStockItems(stockItems.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ))
-  }
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+    }).format(value);
 
-  const totalHarga = stockItems.reduce((sum, item) => sum + (item.jumlah * item.harga), 0)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Stock purchase data:', {
-      supplier,
-      tanggal,
-      items: stockItems
-    })
-  }
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <Link href="/">
-            <Button variant="ghost" className="mb-4">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Kembali
-            </Button>
-          </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Pembelian Stok</h1>
-          <p className="text-sm text-muted-foreground mt-1">Catat pembelian barang dari supplier</p>
-        </div>
-      </header>
+    <ScreenLoader isLoading={loading}>
+      <div className="min-h-screen bg-white">
+        <header className="sticky top-0 z-40 border-b border-gray-300 bg-white">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6">
+            <div>
+              <h1 className="flex items-center gap-2 text-2xl font-bold">
+                <Package className="h-7 w-7 text-emerald-600" />
+                Pembelian Stok
+              </h1>
+              <p className="text-sm text-gray-500">
+                Kantin:{" "}
+                <span className="font-semibold text-emerald-600">
+                  {canteen}
+                </span>
+              </p>
+            </div>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <Card className="border-2 border-primary/20">
-            <CardHeader>
-              <CardTitle>Informasi Pembelian</CardTitle>
-              <CardDescription>Tentukan supplier dan tanggal pembelian</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Supplier*</label>
-                <select
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value)}
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
-                >
-                  {suppliers.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Tanggal*</label>
-                <input
-                  type="date"
-                  value={tanggal}
-                  onChange={(e) => setTanggal(e.target.value)}
-                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  required
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle>Detail Barang</CardTitle>
-                <CardDescription>Daftar barang yang dibeli</CardDescription>
-              </div>
-              <Button
-                type="button"
-                onClick={handleAddItem}
-                size="sm"
-                className="bg-primary hover:bg-primary/90"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Tambah Item
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left py-3 px-4 font-semibold text-muted-foreground">Nama Item</th>
-                      <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Jumlah</th>
-                      <th className="text-center py-3 px-4 font-semibold text-muted-foreground">UOM</th>
-                      <th className="text-right py-3 px-4 font-semibold text-muted-foreground">Harga (Rp)</th>
-                      <th className="text-right py-3 px-4 font-semibold text-muted-foreground">Total</th>
-                      <th className="text-center py-3 px-4 font-semibold text-muted-foreground">Aksi</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stockItems.map((item) => (
-                      <tr key={item.id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                        <td className="py-3 px-4">
-                          <select
-                            value={item.namaItem}
-                            onChange={(e) => handleItemChange(item.id, 'namaItem', e.target.value)}
-                            className="px-2 py-1 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                          >
-                            {items.map(i => (
-                              <option key={i} value={i}>{i}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <input
-                            type="number"
-                            value={item.jumlah}
-                            onChange={(e) => handleItemChange(item.id, 'jumlah', parseFloat(e.target.value) || 0)}
-                            className="w-20 px-2 py-1 border border-border rounded text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            min="0"
-                            step="0.1"
-                          />
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <select
-                            value={item.uom}
-                            onChange={(e) => handleItemChange(item.id, 'uom', e.target.value)}
-                            className="px-2 py-1 border border-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-                          >
-                            {uomOptions.map(u => (
-                              <option key={u} value={u}>{u}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <input
-                            type="number"
-                            value={item.harga}
-                            onChange={(e) => handleItemChange(item.id, 'harga', parseFloat(e.target.value) || 0)}
-                            className="w-24 px-2 py-1 border border-border rounded text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            min="0"
-                          />
-                        </td>
-                        <td className="py-3 px-4 text-right font-semibold">
-                          Rp {(item.jumlah * item.harga).toLocaleString('id-ID')}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveItem(item.id)}
-                            className="p-1 hover:bg-destructive/10 rounded transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-accent/30 bg-accent/5">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-lg font-medium">Total Pembelian:</span>
-                <span className="text-3xl font-bold text-accent">Rp {totalHarga.toLocaleString('id-ID')}</span>
-              </div>
-              <p className="text-sm text-muted-foreground">{stockItems.length} item pembelian</p>
-            </CardContent>
-          </Card>
-
-          <div className="flex gap-3 pt-4">
-            <Link href="/" className="flex-1">
-              <Button variant="outline" className="w-full">
-                Batal
+            <Link href="/admin/stock/add">
+              <Button className="bg-emerald-600 text-white hover:bg-emerald-700">
+                Tambah Pembelian
               </Button>
             </Link>
-            <Button type="submit" className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground">
-              Simpan Pembelian
-            </Button>
           </div>
-        </form>
-      </main>
-    </div>
-  )
+        </header>
+
+        <main className="mx-auto max-w-7xl space-y-6 px-4 py-8">
+          <Card>
+            <CardHeader>
+              <CardTitle>Cari Pembelian</CardTitle>
+              <CardDescription>Filter supplier / ID</CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Cari supplier..."
+                    className="pl-9"
+                  />
+                </div>
+
+                <Button onClick={() => loadData(search)}>Cari</Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {purchases.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Daftar Pembelian</CardTitle>
+                <CardDescription>Total {purchases.length}</CardDescription>
+              </CardHeader>
+
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="px-4 py-3 text-left">ID</th>
+                        <th className="px-4 py-3 text-left">Supplier</th>
+                        <th className="px-4 py-3 text-left">Tanggal</th>
+                        <th className="px-4 py-3 text-right">Total</th>
+                        <th className="px-4 py-3 text-center">Aksi</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {purchases.map((item) => (
+                        <tr key={item.purchase_id} className="border-b">
+                          <td className="px-4 py-3 font-medium text-emerald-600">
+                            {item.purchase_id}
+                          </td>
+                          <td className="px-4 py-3">{item.supplier}</td>
+                          <td className="px-4 py-3">
+                            {formatDate(item.purchase_date)}
+                          </td>
+                          <td className="px-4 py-3 text-right font-semibold">
+                            {formatCurrency(item.total_amount)}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <Link href={`/admin/stock/${item.purchase_id}`}>
+                              <Button variant="outline" size="sm">
+                                <Eye className="mr-1 h-4 w-4" />
+                                Detail
+                              </Button>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center text-gray-500">
+                Tidak ada data pembelian
+              </CardContent>
+            </Card>
+          )}
+        </main>
+      </div>
+    </ScreenLoader>
+  );
 }
