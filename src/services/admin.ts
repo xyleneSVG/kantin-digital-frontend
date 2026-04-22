@@ -207,3 +207,52 @@ export const getPurchaseInvoices = async ({
     return [];
   }
 };
+
+export interface PurchaseInvoiceItem {
+  item_code: string;
+  item_name: string;
+  uom: string;
+  qty: number;
+  rate: number;
+  amount: number;
+  warehouse: string;
+}
+
+export interface PurchaseInvoiceDetail {
+  purchase_invoice_id: string;
+  supplier: string;
+  company: string;
+  posting_date: string;
+  set_warehouse: string;
+  grand_total: number;
+  status: string;
+  docstatus: number;
+  items: PurchaseInvoiceItem[];
+}
+
+export const getPurchaseInvoiceDetail = async (id: string) => {
+  const apiKey = localStorage.getItem("api_key");
+  const apiSecret = localStorage.getItem("api_secret");
+
+  const res = await fetch(
+    `/api/admin/purchase-invoice/detail?purchase_invoice_id=${encodeURIComponent(id)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `token ${apiKey}:${apiSecret}`,
+      },
+      cache: "no-store",
+    },
+  );
+
+  const json = await res.json();
+
+  console.log("DEBUG DETAIL API:", json);
+
+  if (!res.ok || json.meta?.code !== 1500) {
+    throw new Error(json.meta?.message || "Gagal mengambil detail invoice");
+  }
+
+  return json.data;
+};
