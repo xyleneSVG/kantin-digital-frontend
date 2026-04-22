@@ -15,7 +15,7 @@ export async function PUT(req: Request) {
         item_group: body.item_group,
         stock_uom: body.stock_uom,
         uoms: body.uoms,
-        is_stock_item: true,
+        is_stock_item: body.is_stock_item,
         selling_price: body.selling_price,
         company: body.company,
         image: body.image,

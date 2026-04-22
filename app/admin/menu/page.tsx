@@ -143,7 +143,7 @@ export default function MenuPage() {
 
                   <CardContent>
                     <div className="mb-4 border-b pb-4 border-gray-100">
-                      <p className="text-muted-foreground text-sm line-clamp-2 min-h-[40px]">
+                      <p className="text-muted-foreground text-sm line-clamp-2 min-h-10">
                         {item.deskripsi}
                       </p>
                       <div className="mt-3 flex items-center justify-between">
@@ -162,7 +162,7 @@ export default function MenuPage() {
                         className="flex-1"
                       >
                         <Button
-                          variant="outline"
+                          variant="default"
                           className="w-full border-gray-200"
                         >
                           <Edit2 className="mr-2 h-3 w-3" />
@@ -174,7 +174,7 @@ export default function MenuPage() {
                         size="icon"
                         onClick={() => handleDelete(item.id)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4 text-white" />
                       </Button>
                     </div>
                   </CardContent>
