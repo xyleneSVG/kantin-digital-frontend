@@ -256,3 +256,49 @@ export const getPurchaseInvoiceDetail = async (id: string) => {
 
   return json.data;
 };
+
+export const getSuppliers = async (company: string, search = "") => {
+  const apiKey = localStorage.getItem("api_key");
+  const apiSecret = localStorage.getItem("api_secret");
+
+  const res = await fetch(
+    `/api/admin/purchase-invoice/supplier?company=${encodeURIComponent(company)}&search=${encodeURIComponent(search)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `token ${apiKey}:${apiSecret}`,
+      },
+    }
+  );
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.meta?.message || "Gagal ambil supplier");
+  }
+
+  return json.data.suppliers.map((s: any) => s.supplier_name);
+};
+
+export const createPurchaseInvoice = async (payload: any) => {
+  const apiKey = localStorage.getItem("api_key");
+  const apiSecret = localStorage.getItem("api_secret");
+
+  const res = await fetch(`/api/admin/purchase-invoice/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `token ${apiKey}:${apiSecret}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const json = await res.json();
+
+  if (!res.ok) {
+    throw new Error(json?.meta?.message || "Gagal create purchase");
+  }
+
+  return json;
+};

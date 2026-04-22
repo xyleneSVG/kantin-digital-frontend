@@ -242,49 +242,6 @@ export default function StockDetailPage() {
                   </div>
                 </CardContent>
               </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Status</CardTitle>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div
-                    className={`flex items-center gap-2 rounded p-3 ${getStatusColor(
-                      status,
-                    )}`}
-                  >
-                    {status === "completed" ? (
-                      <CheckCircle2 className="h-5 w-5" />
-                    ) : (
-                      <Truck className="h-5 w-5" />
-                    )}
-                    <span className="font-semibold">
-                      {getStatusLabel(status)}
-                    </span>
-                  </div>
-
-                  {status === "pending" && (
-                    <Button
-                      onClick={() => handleStatusUpdate("received")}
-                      disabled={isUpdating}
-                      className="w-full bg-emerald-600 text-white"
-                    >
-                      Tandai Diterima
-                    </Button>
-                  )}
-
-                  {status === "received" && (
-                    <Button
-                      onClick={() => handleStatusUpdate("completed")}
-                      disabled={isUpdating}
-                      className="w-full bg-emerald-600 text-white"
-                    >
-                      Tandai Selesai
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
             </>
           )}
         </main>

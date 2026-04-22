@@ -22,6 +22,7 @@ export default function EditMenuPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const [formData, setFormData] = useState({
     namaItem: "",
@@ -139,6 +140,8 @@ export default function EditMenuPage() {
       }
 
       await editMenu(payload);
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 2000);
     } catch (err) {
       console.error(err);
     } finally {
@@ -149,6 +152,16 @@ export default function EditMenuPage() {
   return (
     <ScreenLoader isLoading={isLoading}>
       <div className="bg-background min-h-screen">
+        {showPopup && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="rounded-lg bg-white px-6 py-4 text-center shadow-lg">
+              <p className="text-sm font-medium text-green-600">
+                Berhasil menyimpan perubahan
+              </p>
+            </div>
+          </div>
+        )}
+
         <header className="border-border bg-card border-b">
           <div className="mx-auto max-w-3xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
             <Link href="/admin/menu">
