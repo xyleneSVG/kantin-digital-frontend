@@ -124,3 +124,31 @@ export const getSalesInvoices = async ({
 
   return json;
 };
+
+export const getSalesInvoiceDetail = async (sales_invoice_id: string) => {
+  try {
+    const apiKey = localStorage.getItem("api_key");
+    const apiSecret = localStorage.getItem("api_secret");
+
+    const res = await fetch(
+      `/api/admin/sales-invoice/detail?sales_invoice_id=${encodeURIComponent(sales_invoice_id)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `token ${apiKey}:${apiSecret}`,
+        },
+      },
+    );
+
+    const json = await res.json();
+
+    if (!res.ok || json.meta?.code !== 1700) {
+      throw new Error(json.meta?.message || "Gagal mengambil detail pesanan");
+    }
+
+    return json.data;
+  } catch (err) {
+    throw err;
+  }
+};
