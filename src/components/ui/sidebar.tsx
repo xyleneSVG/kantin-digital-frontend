@@ -10,6 +10,7 @@ import {
   Package,
   BarChart3,
   LogOut,
+  Settings,
 } from "lucide-react";
 import { logoutUser } from "@/src/services/auth";
 import { usePathname, useRouter } from "next/navigation";
@@ -19,10 +20,11 @@ const navItems = [
   { label: "Daftar Pesanan", href: "/admin/order-lists", icon: ShoppingCart },
   { label: "Kelola Menu", href: "/admin/menu", icon: Package },
   { label: "Pembelian Stok", href: "/admin/stock", icon: BarChart3 },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export function Sidebar() {
-  const router = useRouter()
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const pathname = usePathname();
@@ -34,7 +36,7 @@ export function Sidebar() {
       setIsLoggingOut(true);
       await logoutUser();
       setIsLoggingOut(false);
-      router.push("/admin")
+      router.push("/admin");
     }
   };
 
