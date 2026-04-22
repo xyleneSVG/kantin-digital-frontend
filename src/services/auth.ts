@@ -1,6 +1,6 @@
 export const loginUser = async (identifier: string, password: string) => {
   try {
-    const res = await fetch("/api/login", {
+    const res = await fetch("/api/auth/login/user", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -15,7 +15,7 @@ export const loginUser = async (identifier: string, password: string) => {
 
     if (!res.ok || json.meta.code !== 1000) {
       const apiCode = json.meta?.code;
-      console.log(apiCode)
+      console.log(apiCode);
 
       let errorDetail = {
         type: "error",
@@ -82,8 +82,8 @@ export const checkCustomerActivation = async (nis: string) => {
         highlight: json.meta?.message || "Terjadi kesalahan sistem.",
       };
     }
-    
-    return json.data; 
+
+    return json.data;
   } catch (err) {
     throw err;
   }
@@ -96,7 +96,7 @@ export const activateAccount = async (nis: string, method: string) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nis, activation_method: method }),
     });
-    console.log(res)
+    console.log(res);
 
     const json = await res.json();
 
@@ -115,21 +115,25 @@ export const activateAccount = async (nis: string, method: string) => {
   }
 };
 
-export const changePassword = async (currentPass: string, newPass: string, confirmPass: string) => {
+export const changePassword = async (
+  currentPass: string,
+  newPass: string,
+  confirmPass: string,
+) => {
   try {
     const apiKey = localStorage.getItem("api_key");
     const apiSecret = localStorage.getItem("api_secret");
 
     const res = await fetch("/api/change-password", {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
-        "Authorization": `token ${apiKey}:${apiSecret}` 
+        Authorization: `token ${apiKey}:${apiSecret}`,
       },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         current_password: currentPass,
         new_password: newPass,
-        confirm_password: confirmPass
+        confirm_password: confirmPass,
       }),
     });
 
@@ -142,12 +146,16 @@ export const changePassword = async (currentPass: string, newPass: string, confi
         try {
           const serverMsgs = JSON.parse(json._server_messages);
           const msgObj = JSON.parse(serverMsgs[0]);
-          errorMessage = msgObj.message.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
-        } catch(e) {
-        }
-      } 
-      else if (json.error && typeof json.error === "string") {
-        errorMessage = json.error.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+          errorMessage = msgObj.message
+            .replace(/<[^>]*>?/gm, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        } catch (e) {}
+      } else if (json.error && typeof json.error === "string") {
+        errorMessage = json.error
+          .replace(/<[^>]*>?/gm, " ")
+          .replace(/\s+/g, " ")
+          .trim();
       }
 
       throw {
@@ -179,4 +187,71 @@ export const logoutUser = async () => {
     localStorage.removeItem("api_secret");
     throw err;
   }
+};
+
+export const adminLogin = async (email: string, password: string) => {
+  const res = await fetch("/api/auth/login/admin", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+
+  let json;
+
+  try {
+    json = await res.json();
+  } catch {
+    throw {
+      type: "error",
+      title: "Login Gagal",
+      message: "Response tidak valid dari server",
+      highlight: "Server tidak mengirim data JSON yang benar.",
+    };
+  }
+
+  if (!res.ok || json.meta?.code !== 1000) {
+    const apiCode = json.meta?.code;
+
+    let errorDetail = {
+      type: "error",
+      title: "Login Gagal",
+      message: "Terjadi kesalahan saat login admin.",
+      highlight: json.meta?.message || "Kesalahan sistem tidak diketahui.",
+    };
+
+    switch (apiCode) {
+      case 1001:
+        errorDetail.message = "Akun tidak ditemukan.";
+        errorDetail.highlight = "Email admin tidak terdaftar.";
+        break;
+      case 1002:
+        errorDetail.message = "Format Input Salah.";
+        errorDetail.highlight = "Periksa email dan password.";
+        break;
+      case 1003:
+        errorDetail.message = "Kredensial Salah.";
+        errorDetail.highlight = "Password tidak sesuai.";
+        break;
+      default:
+        errorDetail.message = "Gagal Login Admin.";
+        errorDetail.highlight =
+          json.meta?.message || "Terjadi kesalahan pada server.";
+        break;
+    }
+
+    throw errorDetail;
+  }
+
+  if (typeof window !== "undefined") {
+    localStorage.setItem("api_key", json.data.api_key || "");
+    localStorage.setItem("api_secret", json.data.api_secret || "");
+    localStorage.setItem("company", json.data.company || "");
+  }
+
+  return json.data;
 };

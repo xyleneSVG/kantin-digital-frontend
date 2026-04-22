@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useFrappeAuth } from "frappe-react-sdk";
 
-const PUBLIC_PATHS = ["/login", "/onboarding"];
+const PUBLIC_PATHS = ["/login", "/onboarding", "/admin/login"];
 
 export const useAuthCheck = () => {
   const router = useRouter();
@@ -18,29 +18,29 @@ export const useAuthCheck = () => {
     if (isLoading) return;
 
     const hasToken = typeof window !== "undefined" ? !!localStorage.getItem("api_key") : false;
-
     const isLoggedIn = !!currentUser || hasToken;
-    
     const isPublicPath = PUBLIC_PATHS.includes(pathname);
 
-    // =========================
-    // 🔓 USER BELUM LOGIN
-    // =========================
     if (!isLoggedIn) {
       if (!isPublicPath) {
-        router.replace("/login");
+        if (pathname.startsWith("/admin")) {
+          router.replace("/admin/login");
+        } else {
+          router.replace("/login");
+        }
         return;
       }
       setIsCheckingUI(false);
       return;
     }
 
-    // =========================
-    // 🔐 USER SUDAH LOGIN
-    // =========================
     if (isLoggedIn) {
       if (isPublicPath) {
-        router.replace("/");
+        if (pathname.startsWith("/admin")) {
+          router.replace("/admin");
+        } else {
+          router.replace("/");
+        }
         return;
       }
       setIsCheckingUI(false);
