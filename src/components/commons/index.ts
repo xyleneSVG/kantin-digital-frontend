@@ -5,6 +5,7 @@ import DetailCanteenPage from "./DetailCanteen";
 import DetailPesananPage from "./DetailOrder";
 import FrappeProviderWrapper from "./FrappeProviderWrapper";
 import HomePage from "./Home";
+import SuccessPage from "./inquiry";
 import LoginPage from "./Login";
 import { NavbarComponent } from "./Navbar";
 import NotificationsPage from "./Notifications";
@@ -27,5 +28,6 @@ export {
   DetailPesananPage,
   DetailCanteenPage,
   CheckoutPage,
-  PaymentPage
+  PaymentPage,
+  SuccessPage
 };

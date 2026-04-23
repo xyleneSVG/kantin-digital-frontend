@@ -12,14 +12,17 @@ export function NavbarComponent() {
 
   const hideNavbarRoutes = ["/login", "/onboarding"];
   const isExcludedPath =
-    hideNavbarRoutes.includes(pathname) || pathname.startsWith("/admin");
+    hideNavbarRoutes.includes(pathname) ||
+    pathname.startsWith("/admin") ||
+    pathname.includes("/payment") ||
+    pathname.includes("/checkout");
 
   if (isExcludedPath) {
     return null;
   }
 
   return (
-    <div className="bg-dark fixed bottom-0 z-999 flex w-full justify-center rounded-t-xl shadow-md">
+    <div className="bg-dark fixed bottom-0 z-55 flex w-full justify-center rounded-t-xl shadow-md">
       <div className="flex w-full max-w-82 flex-row items-center justify-between py-5">
         <Link href="/">
           <House
@@ -66,7 +69,7 @@ export function NavbarComponent() {
         <Link href="/profile">
           <Image
             src={ASSETS.PROFILE}
-            alt={""}
+            alt=""
             width={1920}
             height={1920}
             className={cn(

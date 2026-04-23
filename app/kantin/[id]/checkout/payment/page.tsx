@@ -1,5 +1,5 @@
 import { PaymentPage } from "@/src/components/commons";
 
-export default function LoginRoute() {
+export default function PaymentRoute() {
   return <PaymentPage/>;
 }

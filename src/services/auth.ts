@@ -32,7 +32,6 @@ export const loginUser = async (identifier: string, password: string) => {
 
     if (!res.ok || json.meta.code !== 1000) {
       const apiCode = json.meta?.code;
-      console.log(apiCode);
 
       let errorDetail = {
         type: "error",
@@ -69,11 +68,24 @@ export const loginUser = async (identifier: string, password: string) => {
             "Terjadi kendala pada server (Internal Error).";
           break;
       }
+
       throw errorDetail;
     }
 
-    localStorage.setItem("api_key", json.data.api_key);
-    localStorage.setItem("api_secret", json.data.api_secret);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("api_key", json.data.api_key);
+      localStorage.setItem("api_secret", json.data.api_secret);
+
+      localStorage.setItem(
+        "current_user",
+        JSON.stringify({
+          email: json.data.email,
+          nis: json.data.nis,
+          customer_profile: json.data.customer_profile,
+          user_type: json.data.user_type,
+        }),
+      );
+    }
 
     return json.data;
   } catch (err) {

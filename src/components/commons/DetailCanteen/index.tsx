@@ -6,7 +6,7 @@ import BestMenuCard from "./BestMenuCard";
 import MenuItemList from "./MenuItemList";
 import { useCartStore } from "@/src/store/useCartStore";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { ShoppingCart, Minus, Plus } from "lucide-react";
+import { ShoppingCart, Minus, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ScreenLoader from "@/src/hooks/useScreenLoader";
@@ -35,6 +35,11 @@ type Item = {
 const formatPrice = (value: number) => {
   return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
+
+const toNumber = (value: string | number) =>
+  typeof value === "number"
+    ? value
+    : Number(String(value).replace(/[^0-9]/g, "")) || 0;
 
 export default function DetailCanteenPage() {
   const router = useRouter();
@@ -97,16 +102,12 @@ export default function DetailCanteenPage() {
 
         const rawItems =
           itemsRes?.items ?? itemsRes?.data?.items ?? itemsRes?.data ?? [];
-
         const safeItems = Array.isArray(rawItems) ? rawItems : [];
-
         const grouped: Record<string, Item[]> = {};
 
         safeItems.forEach((i: any) => {
           const group = i.item_group || "Lainnya";
-
           if (!grouped[group]) grouped[group] = [];
-
           grouped[group].push({
             id: i.item_code,
             title: i.item_name,
@@ -136,7 +137,6 @@ export default function DetailCanteenPage() {
     if (openMenuId) {
       const allMenus = [...bestMenu, ...Object.values(menuByGroup).flat()];
       const foundMenu = allMenus.find((m) => m.id === openMenuId);
-
       if (foundMenu) {
         setSelectedItem(foundMenu);
         setModalQty(1);
@@ -150,9 +150,10 @@ export default function DetailCanteenPage() {
     setModalQty(1);
   };
 
+  const closeModal = () => setSelectedItem(null);
+
   const handleAddToCartFromModal = () => {
     if (!selectedItem) return;
-
     for (let i = 0; i < modalQty; i++) {
       addToCart(canteenId, {
         id: selectedItem.id,
@@ -161,9 +162,12 @@ export default function DetailCanteenPage() {
         image: selectedItem.image,
       });
     }
-
-    setSelectedItem(null);
+    closeModal();
   };
+
+  const totalItemPrice = selectedItem
+    ? toNumber(selectedItem.price) * modalQty
+    : 0;
 
   return (
     <ScreenLoader isLoading={isLoading}>
@@ -226,10 +230,11 @@ export default function DetailCanteenPage() {
           ))}
         </div>
 
+        {/* ── Cart FAB ── */}
         {cartCount > 0 && (
           <button
             onClick={() => router.push(`/kantin/${canteenId}/checkout`)}
-            className="fixed right-5 bottom-25 z-40 flex size-14 items-center justify-center rounded-full bg-[#6BBA9C] text-white"
+            className="fixed right-5 bottom-25 z-40 flex size-14 items-center justify-center rounded-full bg-[#6BBA9C] text-white shadow-lg transition-transform active:scale-95"
           >
             <div className="relative flex items-center justify-center">
               <ShoppingCart size={24} />
@@ -240,48 +245,117 @@ export default function DetailCanteenPage() {
           </button>
         )}
 
+        {/* ── Item Detail Bottom Sheet ── */}
         <AnimatePresence>
           {selectedItem && (
             <>
+              {/* Backdrop */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setSelectedItem(null)}
-                className="fixed inset-0 z-[99] bg-black/40"
+                onClick={closeModal}
+                className="fixed inset-0 z-[99] bg-black/50 backdrop-blur-[2px]"
               />
 
+              {/* Sheet */}
               <motion.div
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
-                className="bg-secondary fixed right-0 bottom-0 left-0 z-[99] flex max-h-[90vh] flex-col rounded-t-3xl p-5 pb-24"
+                transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                drag="y"
+                dragConstraints={{ top: 0, bottom: 0 }}
+                dragElastic={{ top: 0, bottom: 0.4 }}
+                onDragEnd={(_, info) => {
+                  if (info.offset.y > 100 || info.velocity.y > 500) {
+                    closeModal();
+                  }
+                }}
+                className="bg-secondary fixed right-0 bottom-0 left-0 z-[100] flex max-h-[90vh] flex-col overflow-hidden rounded-t-3xl"
+                style={{ touchAction: "none" }}
               >
-                <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-2xl bg-white">
-                  <Image
-                    src={selectedItem.image}
-                    alt={selectedItem.title}
-                    fill
-                    className="object-cover"
-                  />
+                {/* Drag Handle */}
+                <div className="flex w-full cursor-grab justify-center pt-3 pb-1 active:cursor-grabbing">
+                  <div className="h-1 w-10 rounded-full bg-gray-300" />
                 </div>
 
-                <h3 className="text-[18px] font-bold">{selectedItem.title}</h3>
-
-                <p className="mt-1 text-[13px]">{selectedItem.description}</p>
-
-                <div className="mt-5 flex items-center justify-between">
-                  <p className="text-[16px] font-bold text-[#6BBA9C]">
-                    Rp {selectedItem.price}
-                  </p>
-                </div>
-
+                {/* Close Button */}
                 <button
-                  onClick={handleAddToCartFromModal}
-                  className="mt-8 w-full rounded-xl bg-[#6BBA9C] py-3.5 text-white"
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 z-10 flex size-8 items-center justify-center rounded-full bg-black/10 text-gray-700 transition-colors active:bg-black/20"
                 >
-                  Tambah ke Keranjang
+                  <X size={15} />
                 </button>
+
+                {/* Scrollable Content */}
+                <div className="flex flex-col overflow-y-auto px-5 pt-2 pb-6">
+                  {/* Image */}
+                  <div className="relative mb-4 aspect-[4/3] w-full overflow-hidden rounded-2xl bg-gray-100">
+                    <Image
+                      src={selectedItem.image}
+                      alt={selectedItem.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+
+                  {/* Title & Price */}
+                  <div className="mb-1 flex items-start justify-between gap-3">
+                    <h3 className="flex-1 text-[18px] leading-tight font-bold text-gray-900">
+                      {selectedItem.title}
+                    </h3>
+                    <p className="flex-shrink-0 text-[16px] font-bold text-[#6BBA9C]">
+                      Rp {selectedItem.price}
+                    </p>
+                  </div>
+
+                  {/* Description */}
+                  {selectedItem.description && (
+                    <p className="mb-5 text-[13px] leading-relaxed text-gray-500">
+                      {selectedItem.description}
+                    </p>
+                  )}
+
+                  {/* Divider */}
+                  <div className="mb-5 h-px bg-gray-200" />
+
+                  {/* Qty & Add to Cart */}
+                  <div className="flex items-center justify-between gap-4">
+                    {/* Qty Control */}
+                    <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-3 py-2">
+                      <button
+                        onClick={() => setModalQty((q) => Math.max(1, q - 1))}
+                        disabled={modalQty <= 1}
+                        className="flex size-8 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 transition-colors active:bg-gray-50 disabled:opacity-30"
+                      >
+                        <Minus size={13} />
+                      </button>
+                      <span className="w-6 text-center text-[16px] font-bold text-gray-900">
+                        {modalQty}
+                      </span>
+                      <button
+                        onClick={() => setModalQty((q) => q + 1)}
+                        className="flex size-8 items-center justify-center rounded-full bg-[#6BBA9C] text-white transition-opacity active:opacity-80"
+                      >
+                        <Plus size={13} />
+                      </button>
+                    </div>
+
+                    {/* Add to Cart Button */}
+                    <button
+                      onClick={handleAddToCartFromModal}
+                      className="flex flex-1 items-center justify-between rounded-2xl bg-[#6BBA9C] px-4 py-3 text-white transition-opacity active:opacity-80"
+                    >
+                      <span className="text-[13px] font-bold">
+                        Tambah ke Keranjang
+                      </span>
+                      <span className="text-[13px] font-bold opacity-90">
+                        Rp {formatPrice(totalItemPrice)}
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             </>
           )}
