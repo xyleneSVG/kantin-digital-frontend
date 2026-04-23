@@ -30,6 +30,7 @@ export default function EditMenuPage() {
     hargaJual: "",
     deskripsi: "",
     lacak_stok: false,
+    status: true,
     uom: "",
     kuantitasUom: 1,
   });
@@ -58,6 +59,7 @@ export default function EditMenuPage() {
           hargaJual: data.selling_price?.toString() || "",
           deskripsi: data.description || "",
           lacak_stok: Boolean(data.is_stock_item),
+          status: data.disabled === 0,
           uom: data.stock_uom || "",
           kuantitasUom: 1,
         });
@@ -93,6 +95,13 @@ export default function EditMenuPage() {
       ...prev,
       [name]:
         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
+
+  const handleToggleStatus = () => {
+    setFormData((prev) => ({
+      ...prev,
+      status: !prev.status,
     }));
   };
 
@@ -133,6 +142,7 @@ export default function EditMenuPage() {
         })),
         is_stock_item: formData.lacak_stok,
         selling_price: Number(formData.hargaJual),
+        disabled: formData.status ? 0 : 1,
         company,
       };
 
@@ -306,6 +316,32 @@ export default function EditMenuPage() {
 
             <Card>
               <CardHeader>
+                <CardTitle>Status</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    {formData.status ? "Tersedia" : "Tidak Tersedia"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleToggleStatus}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                      formData.status ? "bg-emerald-600" : "bg-gray-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                        formData.status ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Unit Pengukuran (UOM)</CardTitle>
                 <CardDescription>Perbarui satuan dan konversi</CardDescription>
               </CardHeader>
@@ -417,11 +453,6 @@ export default function EditMenuPage() {
             </Card>
 
             <div className="flex gap-3 pt-4">
-              <Link href="/admin/menu" className="flex-1">
-                <Button variant="outline" className="w-full">
-                  Batal
-                </Button>
-              </Link>
               <Button type="submit" className="flex-1" disabled={isSubmitting}>
                 {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
