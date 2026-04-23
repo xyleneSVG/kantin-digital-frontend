@@ -126,6 +126,7 @@ export default function EditMenuPage() {
         item_name: formData.namaItem,
         item_group: formData.grupItem,
         stock_uom: formData.uom,
+        description: formData.deskripsi,
         uoms: conversions.map((c) => ({
           uom: c.ke,
           conversion_factor: Number(c.jumlah),

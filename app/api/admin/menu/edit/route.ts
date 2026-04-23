@@ -19,6 +19,7 @@ export async function PUT(req: Request) {
         selling_price: body.selling_price,
         company: body.company,
         image: body.image,
+        description: body.description
       }),
     },
   );
