@@ -22,18 +22,41 @@ export const getAdminMenuList = async (company: string) => {
     throw new Error(json.meta?.message || "Gagal mengambil data menu");
   }
 
-  return json.data.items.map((item: any) => ({
-    id: item.item_code,
-    nama: item.item_name,
-    grup: item.item_group.includes(" - ")
-      ? item.item_group.split(" - ")[1]
-      : item.item_group,
-    harga: item.selling_price || 0,
-    deskripsi: item.description || "Tidak ada deskripsi",
-    tersedia: item.disabled === 0 && item.total_stock > 0,
-    stok: item.total_stock || 0,
-    image: item.image ? `https://ta-dev.subekti.web.id${item.image}` : null,
-  }));
+  return json.data.items.map((item: any) => {
+    const isStockItem = item.is_stock_item;
+    const isDisabled = item.disabled === 1;
+    const stock = item.total_stock || 0;
+
+    let tersedia = false;
+    let label = "Tidak tersedia";
+
+    if (!isStockItem) {
+      tersedia = !isDisabled;
+      label = tersedia ? "Tersedia" : "Tidak tersedia";
+    } else {
+      if (isDisabled) {
+        tersedia = false;
+        label = "Tidak tersedia";
+      } else {
+        tersedia = stock > 0;
+        label = tersedia ? "Tersedia" : "Habis";
+      }
+    }
+
+    return {
+      id: item.item_code,
+      nama: item.item_name,
+      grup: item.item_group.includes(" - ")
+        ? item.item_group.split(" - ")[1]
+        : item.item_group,
+      harga: item.selling_price || 0,
+      deskripsi: item.description || "Tidak ada deskripsi",
+      tersedia,
+      label,
+      stok: stock,
+      image: item.image ? `https://ta-dev.subekti.web.id${item.image}` : null,
+    };
+  });
 };
 
 export const editMenu = async (payload: any) => {

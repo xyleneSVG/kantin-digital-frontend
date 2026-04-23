@@ -38,6 +38,7 @@ export default function EditMenuPage() {
   const [conversions, setConversions] = useState<any[]>([]);
   const [image, setImage] = useState("");
   const [newImage, setNewImage] = useState("");
+  const [fileError, setFileError] = useState("");
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -274,6 +275,15 @@ export default function EditMenuPage() {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
+
+                      const MAX_SIZE = 1 * 1024 * 1024;
+                      if (file.size > MAX_SIZE) {
+                        setFileError("Ukuran file maksimal 1MB");
+                        e.target.value = "";
+                        return;
+                      }
+                      setFileError("");
+
                       const reader = new FileReader();
                       reader.onloadend = () => {
                         setNewImage(reader.result as string);
@@ -288,6 +298,9 @@ export default function EditMenuPage() {
                       src={image}
                       className="mx-auto mt-4 h-32 object-contain"
                     />
+                  )}
+                  {fileError && (
+                    <p className="mt-2 text-sm text-red-500">{fileError}</p>
                   )}
                 </div>
               </CardContent>
