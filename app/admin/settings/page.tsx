@@ -11,8 +11,10 @@ import {
 } from "@/src/components/ui/card";
 import { Input } from "@/src/components/ui/og-input";
 import { Settings, Upload, X } from "lucide-react";
-import { getCanteenDetail, updateCanteen } from "@/src/services/canteen";
+
 import ScreenLoader from "@/src/hooks/useScreenLoader";
+import { getCanteenDetail } from "@/src/services/user";
+import { updateCanteen } from "@/src/services/admin";
 
 interface CanteenInfo {
   kantin_id: string;

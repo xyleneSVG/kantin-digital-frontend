@@ -1,3 +1,20 @@
+export const handleUnauthorized = async (res: Response, json?: any) => {
+  if (
+    res.status === 401 ||
+    json?.exc_type === "AuthenticationError" ||
+    json?.exception?.includes("AuthenticationError") ||
+    json?.meta?.code === 1008
+  ) {
+    await logoutUser();
+
+    if (typeof window !== "undefined") {
+      window.location.href = "/admin/login";
+    }
+
+    throw new Error("Unauthorized");
+  }
+};
+
 export const loginUser = async (identifier: string, password: string) => {
   try {
     const res = await fetch("/api/auth/login/user", {

@@ -14,7 +14,7 @@ import { BestChoiceComponent } from "./BestChoice";
 import { DATA } from "@/src/constants/data";
 import { changePassword } from "@/src/services/auth";
 // Pastikan import fungsi service baru ini
-import { getCanteenRecommendations, getMenuRecommendations } from "@/src/services/home"; 
+import { getCanteenRecommendations, getMenuRecommendations } from "@/src/services/user"; 
 import ScreenLoader from "@/src/hooks/useScreenLoader";
 
 export default function HomePage() {

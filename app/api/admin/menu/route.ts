@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     });
 
     const data = await res.json();
+    console.log(JSON.stringify(data))
     return NextResponse.json(data);
   } catch (err) {
     return NextResponse.json({ message: "Proxy error" }, { status: 500 });

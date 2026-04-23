@@ -1,40 +1,39 @@
+import { handleUnauthorized } from "./auth";
+
 export const getAdminMenuList = async (company: string) => {
-  try {
-    const apiKey = localStorage.getItem("api_key");
-    const apiSecret = localStorage.getItem("api_secret");
+  const apiKey = localStorage.getItem("api_key");
+  const apiSecret = localStorage.getItem("api_secret");
 
-    const res = await fetch(
-      `/api/admin/menu?canteen=${encodeURIComponent(company)}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `token ${apiKey}:${apiSecret}`,
-        },
+  const res = await fetch(
+    `/api/admin/menu?canteen=${encodeURIComponent(company)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `token ${apiKey}:${apiSecret}`,
       },
-    );
+    },
+  );
 
-    const json = await res.json();
+  const json = await res.json();
+  await handleUnauthorized(res, json);
 
-    if (!res.ok || json.meta?.code !== 1600) {
-      throw new Error(json.meta?.message || "Gagal mengambil data menu");
-    }
-
-    return json.data.items.map((item: any) => ({
-      id: item.item_code,
-      nama: item.item_name,
-      grup: item.item_group.includes(" - ")
-        ? item.item_group.split(" - ")[1]
-        : item.item_group,
-      harga: item.selling_price || 0,
-      deskripsi: item.description || "Tidak ada deskripsi",
-      tersedia: item.disabled === 0 && item.total_stock > 0,
-      stok: item.total_stock || 0,
-      image: item.image ? `https://ta-dev.subekti.web.id${item.image}` : null,
-    }));
-  } catch (err) {
-    throw err;
+  if (!res.ok || json.meta?.code !== 1600) {
+    throw new Error(json.meta?.message || "Gagal mengambil data menu");
   }
+
+  return json.data.items.map((item: any) => ({
+    id: item.item_code,
+    nama: item.item_name,
+    grup: item.item_group.includes(" - ")
+      ? item.item_group.split(" - ")[1]
+      : item.item_group,
+    harga: item.selling_price || 0,
+    deskripsi: item.description || "Tidak ada deskripsi",
+    tersedia: item.disabled === 0 && item.total_stock > 0,
+    stok: item.total_stock || 0,
+    image: item.image ? `https://ta-dev.subekti.web.id${item.image}` : null,
+  }));
 };
 
 export const editMenu = async (payload: any) => {
@@ -51,13 +50,16 @@ export const editMenu = async (payload: any) => {
   });
 
   const text = await res.text();
+  const json = text ? JSON.parse(text) : {};
+
+  await handleUnauthorized(res, json);
 
   if (!res.ok) {
     console.error("ERROR RESPONSE:", text);
     throw new Error("Request gagal");
   }
 
-  return text ? JSON.parse(text) : { success: true };
+  return json;
 };
 
 export const getMenuDetail = async (payload: any) => {
@@ -69,13 +71,14 @@ export const getMenuDetail = async (payload: any) => {
     body: JSON.stringify(payload),
   });
 
-  const data = await res.json();
+  const json = await res.json();
+  await handleUnauthorized(res, json);
 
   if (!res.ok) {
-    throw new Error(data.message || "Gagal ambil detail menu");
+    throw new Error(json.message || "Gagal ambil detail menu");
   }
 
-  return data;
+  return json;
 };
 
 export async function createMenu(payload: any) {
@@ -85,13 +88,16 @@ export async function createMenu(payload: any) {
   });
 
   const text = await res.text();
+  const json = text ? JSON.parse(text) : {};
+
+  await handleUnauthorized(res, json);
 
   if (!res.ok) {
     console.error("ERROR RESPONSE:", text);
     throw new Error("Request gagal");
   }
 
-  return text ? JSON.parse(text) : { success: true };
+  return json;
 }
 
 export const getSalesInvoices = async ({
@@ -117,6 +123,7 @@ export const getSalesInvoices = async ({
   );
 
   const json = await res.json();
+  await handleUnauthorized(res, json);
 
   if (!res.ok) {
     throw new Error(json?.meta?.message || "Gagal mengambil data");
@@ -126,31 +133,28 @@ export const getSalesInvoices = async ({
 };
 
 export const getSalesInvoiceDetail = async (sales_invoice_id: string) => {
-  try {
-    const apiKey = localStorage.getItem("api_key");
-    const apiSecret = localStorage.getItem("api_secret");
+  const apiKey = localStorage.getItem("api_key");
+  const apiSecret = localStorage.getItem("api_secret");
 
-    const res = await fetch(
-      `/api/admin/sales-invoice/detail?sales_invoice_id=${encodeURIComponent(sales_invoice_id)}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `token ${apiKey}:${apiSecret}`,
-        },
+  const res = await fetch(
+    `/api/admin/sales-invoice/detail?sales_invoice_id=${encodeURIComponent(sales_invoice_id)}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `token ${apiKey}:${apiSecret}`,
       },
-    );
+    },
+  );
 
-    const json = await res.json();
+  const json = await res.json();
+  await handleUnauthorized(res, json);
 
-    if (!res.ok || json.meta?.code !== 1700) {
-      throw new Error(json.meta?.message || "Gagal mengambil detail pesanan");
-    }
-
-    return json.data;
-  } catch (err) {
-    throw err;
+  if (!res.ok || json.meta?.code !== 1700) {
+    throw new Error(json.meta?.message || "Gagal mengambil detail pesanan");
   }
+
+  return json.data;
 };
 
 export interface PurchaseInvoice {
@@ -189,6 +193,7 @@ export const getPurchaseInvoices = async ({
     );
 
     const json = await res.json();
+    await handleUnauthorized(res, json);
 
     if (!res.ok) {
       throw new Error(json?.meta?.message || "Gagal mengambil data");
@@ -247,8 +252,7 @@ export const getPurchaseInvoiceDetail = async (id: string) => {
   );
 
   const json = await res.json();
-
-  console.log("DEBUG DETAIL API:", json);
+  await handleUnauthorized(res, json);
 
   if (!res.ok || json.meta?.code !== 1500) {
     throw new Error(json.meta?.message || "Gagal mengambil detail invoice");
@@ -269,10 +273,11 @@ export const getSuppliers = async (company: string, search = "") => {
         "Content-Type": "application/json",
         Authorization: `token ${apiKey}:${apiSecret}`,
       },
-    }
+    },
   );
 
   const json = await res.json();
+  await handleUnauthorized(res, json);
 
   if (!res.ok) {
     throw new Error(json?.meta?.message || "Gagal ambil supplier");
@@ -295,6 +300,7 @@ export const createPurchaseInvoice = async (payload: any) => {
   });
 
   const json = await res.json();
+  await handleUnauthorized(res, json);
 
   if (!res.ok) {
     throw new Error(json?.meta?.message || "Gagal create purchase");
@@ -303,3 +309,38 @@ export const createPurchaseInvoice = async (payload: any) => {
   return json;
 };
 
+export const updateCanteen = async (payload: {
+  canteen_id: string;
+  canteen_name: string;
+  location_description: string;
+  image: string;
+}) => {
+  try {
+    const apiKey = localStorage.getItem("api_key");
+    const apiSecret = localStorage.getItem("api_secret");
+
+    const res = await fetch(`/api/canteen/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...payload,
+        api_key: apiKey,
+        api_secret: apiSecret,
+      }),
+    });
+
+    const text = await res.text();
+    const json = text ? JSON.parse(text) : {};
+    await handleUnauthorized(res, json);
+
+    if (!res.ok || json.meta?.code !== 1600) {
+      throw new Error(json.meta?.message || "Gagal menyimpan data kantin.");
+    }
+
+    return json;
+  } catch (err) {
+    throw err;
+  }
+};
