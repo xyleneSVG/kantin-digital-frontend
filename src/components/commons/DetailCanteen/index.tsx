@@ -10,62 +10,11 @@ import { ShoppingCart, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ScreenLoader from "@/src/hooks/useScreenLoader";
-import { getCanteenDetail } from "@/src/services/user";
-
-const DATA = {
-  bestMenu: [
-    {
-      id: "123",
-      title: "Paket A",
-      price: "12.000",
-      image: "/images/kantinB.png",
-    },
-    {
-      id: "321",
-      title: "Paket B",
-      price: "12.000",
-      image: "/images/kantinB.png",
-    },
-    {
-      id: "41231",
-      title: "Paket C",
-      price: "12.000",
-      image: "/images/kantinB.png",
-    },
-  ],
-  makanan: [
-    {
-      id: "m1",
-      title: "Menu A",
-      description: "Nasi+Ayam+Sambal",
-      price: "7.000",
-      image: "/images/kantinB.png",
-    },
-    {
-      id: "m2",
-      title: "Menu A",
-      description: "Nasi ayam geprek dengan sambal pedas dan lalapan",
-      price: "7.000",
-      image: "/images/kantinB.png",
-    },
-  ],
-  minuman: [
-    {
-      id: "d1",
-      title: "Minuman A",
-      description: "Es teh seger",
-      price: "3.000",
-      image: "/images/kantinB.png",
-    },
-    {
-      id: "d2",
-      title: "Minuman B",
-      description: "Es jeruk segerr",
-      price: "4.000",
-      image: "/images/kantinB.png",
-    },
-  ],
-};
+import {
+  getCanteenDetail,
+  getCanteenMenu,
+  getCanteenItems,
+} from "@/src/services/user";
 
 interface SelectedItem {
   id: string;
@@ -74,6 +23,18 @@ interface SelectedItem {
   price: string;
   image: string;
 }
+
+type Item = {
+  id: string;
+  title: string;
+  description?: string;
+  price: string;
+  image: string;
+};
+
+const formatPrice = (value: number) => {
+  return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
 
 export default function DetailCanteenPage() {
   const router = useRouter();
@@ -96,30 +57,84 @@ export default function DetailCanteenPage() {
     cover: "",
   });
 
+  const [bestMenu, setBestMenu] = useState<Item[]>([]);
+  const [menuByGroup, setMenuByGroup] = useState<Record<string, Item[]>>({});
+
   useEffect(() => {
-    const fetchDetail = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getCanteenDetail(canteenId);
+        const [detail, recommend, itemsRes] = await Promise.all([
+          getCanteenDetail(canteenId),
+          getCanteenMenu(canteenId),
+          getCanteenItems(canteenId),
+        ]);
+
         setCanteen({
-          name: data.canteen_name || "",
-          location: data.location_description || "",
-          cover: data.image
-            ? `https://ta-dev.subekti.web.id/api/method/${data.image}`
+          name: detail?.canteen_name || "",
+          location: detail?.location_description || "",
+          cover: detail?.image
+            ? `https://ta-dev.subekti.web.id/api/method/${detail.image}`
             : "/images/kantinA.png",
         });
+
+        const recommendList = Array.isArray(recommend)
+          ? recommend
+          : (recommend?.data ?? recommend?.items ?? []);
+
+        const best = recommendList.map((i: any) => ({
+          id: i.item_code,
+          title: i.item_name,
+          description: i.description,
+          price: formatPrice(Number(i.selling_price || 0)),
+          image: i.image
+            ? i.image.startsWith("http")
+              ? i.image
+              : `https://ta-dev.subekti.web.id${i.image}`
+            : "/images/kantinB.png",
+        }));
+
+        setBestMenu(best);
+
+        const rawItems =
+          itemsRes?.items ?? itemsRes?.data?.items ?? itemsRes?.data ?? [];
+
+        const safeItems = Array.isArray(rawItems) ? rawItems : [];
+
+        const grouped: Record<string, Item[]> = {};
+
+        safeItems.forEach((i: any) => {
+          const group = i.item_group || "Lainnya";
+
+          if (!grouped[group]) grouped[group] = [];
+
+          grouped[group].push({
+            id: i.item_code,
+            title: i.item_name,
+            description: i.description,
+            price: formatPrice(Number(i.selling_price || 0)),
+            image: i.image
+              ? i.image.startsWith("http")
+                ? i.image
+                : `https://ta-dev.subekti.web.id${i.image}`
+              : "/images/kantinB.png",
+          });
+        });
+
+        setMenuByGroup(grouped);
       } catch (err) {
-        console.error(err);
+        setBestMenu([]);
+        setMenuByGroup({});
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (canteenId) fetchDetail();
+    if (canteenId) fetchData();
   }, [canteenId]);
 
   useEffect(() => {
     if (openMenuId) {
-      const allMenus = [...DATA.bestMenu, ...DATA.makanan, ...DATA.minuman];
+      const allMenus = [...bestMenu, ...Object.values(menuByGroup).flat()];
       const foundMenu = allMenus.find((m) => m.id === openMenuId);
 
       if (foundMenu) {
@@ -128,7 +143,7 @@ export default function DetailCanteenPage() {
         router.replace(`/kantin/${canteenId}`);
       }
     }
-  }, [openMenuId, canteenId, router]);
+  }, [openMenuId, canteenId, router, bestMenu, menuByGroup]);
 
   const openModal = (item: SelectedItem) => {
     setSelectedItem(item);
@@ -164,8 +179,8 @@ export default function DetailCanteenPage() {
             <h2 className="mb-3 text-[16px] font-bold text-gray-900">
               Menu terbaik
             </h2>
-            <div className="flex flex-row gap-x-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {DATA.bestMenu.map((item) => (
+            <div className="flex flex-row gap-x-3 overflow-x-auto pb-2">
+              {bestMenu.map((item) => (
                 <BestMenuCard
                   key={item.id}
                   {...item}
@@ -184,63 +199,41 @@ export default function DetailCanteenPage() {
             </div>
           </section>
 
-          <section className="mb-6">
-            <h2 className="mb-3 text-[16px] font-bold text-gray-900">
-              Makanan
-            </h2>
-            <div className="flex flex-col gap-y-3">
-              {DATA.makanan.map((item) => (
-                <MenuItemList
-                  key={item.id}
-                  {...item}
-                  onClick={() => openModal(item)}
-                  onAdd={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    addToCart(canteenId, {
-                      id: item.id,
-                      title: item.title,
-                      price: item.price,
-                      image: item.image,
-                    });
-                  }}
-                />
-              ))}
-            </div>
-          </section>
-
-          <section className="mb-6">
-            <h2 className="mb-3 text-[16px] font-bold text-gray-900">
-              Minuman
-            </h2>
-            <div className="flex flex-col gap-y-3">
-              {DATA.minuman.map((item) => (
-                <MenuItemList
-                  key={item.id}
-                  {...item}
-                  onClick={() => openModal(item)}
-                  onAdd={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    addToCart(canteenId, {
-                      id: item.id,
-                      title: item.title,
-                      price: item.price,
-                      image: item.image,
-                    });
-                  }}
-                />
-              ))}
-            </div>
-          </section>
+          {Object.entries(menuByGroup).map(([group, items]) => (
+            <section className="mb-6" key={group}>
+              <h2 className="mb-3 text-[16px] font-bold text-gray-900">
+                {group.split(" - ")[1] || group}
+              </h2>
+              <div className="flex flex-col gap-y-3">
+                {items.map((item) => (
+                  <MenuItemList
+                    key={item.id}
+                    {...item}
+                    onClick={() => openModal(item)}
+                    onAdd={(e: React.MouseEvent) => {
+                      e.stopPropagation();
+                      addToCart(canteenId, {
+                        id: item.id,
+                        title: item.title,
+                        price: item.price,
+                        image: item.image,
+                      });
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
+          ))}
         </div>
 
         {cartCount > 0 && (
           <button
             onClick={() => router.push(`/kantin/${canteenId}/checkout`)}
-            className="fixed right-5 bottom-25 z-40 flex size-14 items-center justify-center rounded-full bg-[#6BBA9C] text-white shadow-[0_4px_15px_rgba(107,186,156,0.5)] transition-transform hover:scale-105 active:scale-95"
+            className="fixed right-5 bottom-25 z-40 flex size-14 items-center justify-center rounded-full bg-[#6BBA9C] text-white"
           >
             <div className="relative flex items-center justify-center">
               <ShoppingCart size={24} />
-              <span className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full border-2 border-white bg-red-500 text-[11px] font-bold text-white">
+              <span className="absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-red-500 text-[11px] font-bold text-white">
                 {cartCount}
               </span>
             </div>
@@ -255,73 +248,37 @@ export default function DetailCanteenPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedItem(null)}
-                className="fixed inset-0 z-[99] bg-black/40 backdrop-blur-[2px]"
+                className="fixed inset-0 z-[99] bg-black/40"
               />
 
               <motion.div
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                drag="y"
-                dragConstraints={{ top: 0, bottom: 0 }}
-                dragElastic={0.2}
-                onDragEnd={(e, { offset, velocity }) => {
-                  if (offset.y > 100 || velocity.y > 500) {
-                    setSelectedItem(null);
-                  }
-                }}
-                className="fixed right-0 bottom-0 left-0 z-[99] flex max-h-[90vh] flex-col rounded-t-3xl bg-secondary p-5 pb-24 shadow-2xl"
+                className="bg-secondary fixed right-0 bottom-0 left-0 z-[99] flex max-h-[90vh] flex-col rounded-t-3xl p-5 pb-24"
               >
-                <div className="mx-auto mb-5 h-1.5 w-12 rounded-full bg-gray-300" />
-
-                <div className="no-scrollbar pointer-events-none overflow-y-auto">
-                  <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-2xl bg-white shadow-sm">
-                    <Image
-                      src={selectedItem.image}
-                      alt={selectedItem.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-
-                  <h3 className="text-[18px] font-bold text-gray-900">
-                    {selectedItem.title}
-                  </h3>
-                  {selectedItem.description && (
-                    <p className="mt-1 text-[13px] leading-relaxed text-gray-600">
-                      {selectedItem.description}
-                    </p>
-                  )}
+                <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-2xl bg-white">
+                  <Image
+                    src={selectedItem.image}
+                    alt={selectedItem.title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
+
+                <h3 className="text-[18px] font-bold">{selectedItem.title}</h3>
+
+                <p className="mt-1 text-[13px]">{selectedItem.description}</p>
 
                 <div className="mt-5 flex items-center justify-between">
                   <p className="text-[16px] font-bold text-[#6BBA9C]">
                     Rp {selectedItem.price}
                   </p>
-
-                  <div className="flex shrink-0 items-center gap-x-3">
-                    <button
-                      onClick={() => setModalQty(Math.max(1, modalQty - 1))}
-                      className="flex size-7 items-center justify-center rounded-full border border-gray-400 bg-transparent text-gray-600 active:scale-95"
-                    >
-                      <Minus size={16} />
-                    </button>
-                    <span className="min-w-5 text-center text-[15px] font-bold text-gray-900">
-                      {modalQty}
-                    </span>
-                    <button
-                      onClick={() => setModalQty(modalQty + 1)}
-                      className="flex size-7 items-center justify-center rounded-full bg-[#6BBA9C] text-white active:scale-95"
-                    >
-                      <Plus size={16} />
-                    </button>
-                  </div>
                 </div>
 
                 <button
                   onClick={handleAddToCartFromModal}
-                  className="mt-8 w-full rounded-xl bg-[#6BBA9C] py-3.5 text-[14px] font-bold text-white shadow-md transition-colors hover:bg-[#5aa387] active:scale-[0.98]"
+                  className="mt-8 w-full rounded-xl bg-[#6BBA9C] py-3.5 text-white"
                 >
                   Tambah ke Keranjang
                 </button>

@@ -1,86 +1,62 @@
 import { handleUnauthorized } from "./auth";
 
-export const getCanteenRecommendations = async () => {
-  try {
-    const apiKey = localStorage.getItem("api_key");
-    const apiSecret = localStorage.getItem("api_secret");
+const getAuthHeaders = () => {
+  const apiKey = localStorage.getItem("api_key");
+  const apiSecret = localStorage.getItem("api_secret");
 
-    const res = await fetch("/api/recommendation/canteen", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          apiKey && apiSecret ? `token ${apiKey}:${apiSecret}` : "",
-      },
-    });
+  return {
+    "Content-Type": "application/json",
+    Authorization: apiKey && apiSecret ? `token ${apiKey}:${apiSecret}` : "",
+  };
+};
 
-    const json = await res.json();
-    await handleUnauthorized(res, json);
+const fetchAPI = async (url: string, errorMessage: string) => {
+  const res = await fetch(url, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
 
-    if (!res.ok || json.meta?.code !== 1600) {
-      throw new Error(
-        json.meta?.message || "Gagal mengambil rekomendasi kantin.",
-      );
-    }
+  const json = await res.json();
+  await handleUnauthorized(res, json);
 
-    return json.data;
-  } catch (err) {
-    throw err;
+  if (!res.ok || json.meta?.code !== 1600) {
+    throw new Error(json.meta?.message || errorMessage);
   }
+
+  return json.data;
+};
+
+export const getCanteenRecommendations = async () => {
+  return fetchAPI(
+    "/api/recommendation/canteen",
+    "Gagal mengambil rekomendasi kantin.",
+  );
 };
 
 export const getMenuRecommendations = async () => {
-  try {
-    const apiKey = localStorage.getItem("api_key");
-    const apiSecret = localStorage.getItem("api_secret");
-
-    const res = await fetch("/api/recommendation/menu", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          apiKey && apiSecret ? `token ${apiKey}:${apiSecret}` : "",
-      },
-    });
-
-    const json = await res.json();
-    await handleUnauthorized(res, json);
-
-    if (!res.ok || json.meta?.code !== 1600) {
-      throw new Error(
-        json.meta?.message || "Gagal mengambil rekomendasi menu.",
-      );
-    }
-
-    return json.data;
-  } catch (err) {
-    throw err;
-  }
+  return fetchAPI(
+    "/api/recommendation/menu",
+    "Gagal mengambil rekomendasi menu.",
+  );
 };
 
 export const getCanteenDetail = async (canteen_id: string) => {
-  try {
-    const apiKey = localStorage.getItem("api_key");
-    const apiSecret = localStorage.getItem("api_secret");
+  return fetchAPI(
+    `/api/canteen/detail?canteen_id=${canteen_id}`,
+    "Gagal mengambil detail kantin.",
+  );
+};
 
-    const res = await fetch(`/api/canteen/detail?canteen_id=${canteen_id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization:
-          apiKey && apiSecret ? `token ${apiKey}:${apiSecret}` : "",
-      },
-    });
+export const getCanteenMenu = async (canteen: string) => {
+  return fetchAPI(
+    `/api/canteen/menu?canteen=${encodeURIComponent(canteen)}`,
+    "Gagal mengambil menu rekomendasi.",
+  );
+};
 
-    const json = await res.json();
-    await handleUnauthorized(res, json);
-
-    if (!res.ok || json.meta?.code !== 1600) {
-      throw new Error(json.meta?.message || "Gagal mengambil detail kantin.");
-    }
-
-    return json.data;
-  } catch (err) {
-    throw err;
-  }
+export const getCanteenItems = async (canteen: string) => {
+  return fetchAPI(
+    `/api/canteen/items?canteen=${encodeURIComponent(canteen)}`,
+    "Gagal mengambil list item.",
+  );
 };
