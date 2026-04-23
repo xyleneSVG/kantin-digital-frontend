@@ -34,6 +34,10 @@ export default function CanteenSettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [operationalTime, setOperationalTime] = useState({
+    open: "",
+    close: "",
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,18 +78,27 @@ export default function CanteenSettingsPage() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPreviewImage(result);
-        setCanteenInfo((prev) => ({
-          ...prev,
-          image_url: result,
-        }));
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    const MAX_SIZE = 1 * 1024 * 1024;
+
+    if (file.size > MAX_SIZE) {
+      alert("Ukuran gambar maksimal 1MB");
+      e.target.value = "";
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const result = reader.result as string;
+      setPreviewImage(result);
+      setCanteenInfo((prev) => ({
+        ...prev,
+        image_url: result,
+      }));
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleRemoveImage = () => {
@@ -172,7 +185,8 @@ export default function CanteenSettingsPage() {
                   name="nama_kantin"
                   value={canteenInfo.nama_kantin}
                   onChange={handleInputChange}
-                  className="border-gray-300"
+                  disabled
+                  className="border-gray-300 bg-gray-100 text-gray-900"
                 />
               </CardContent>
             </Card>
@@ -216,6 +230,51 @@ export default function CanteenSettingsPage() {
 
             <Card>
               <CardHeader>
+                <CardTitle>Jam Operasional</CardTitle>
+                <CardDescription>
+                  Atur jam buka dan tutup kantin
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Jam Buka
+                  </label>
+                  <input
+                    type="time"
+                    value={operationalTime.open}
+                    onChange={(e) =>
+                      setOperationalTime((prev) => ({
+                        ...prev,
+                        open: e.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium">
+                    Jam Tutup
+                  </label>
+                  <input
+                    type="time"
+                    value={operationalTime.close}
+                    onChange={(e) =>
+                      setOperationalTime((prev) => ({
+                        ...prev,
+                        close: e.target.value,
+                      }))
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-4 py-2"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Deskripsi Lokasi</CardTitle>
               </CardHeader>
               <CardContent>
@@ -224,7 +283,7 @@ export default function CanteenSettingsPage() {
                   value={canteenInfo.deskripsi_lokasi}
                   onChange={handleInputChange}
                   className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3"
-                  rows={5}
+                  rows={3}
                 />
               </CardContent>
             </Card>
