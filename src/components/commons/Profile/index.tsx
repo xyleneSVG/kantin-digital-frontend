@@ -14,13 +14,9 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       await logoutUser();
-      
-      // Setelah localStorage bersih, gunakan router.replace agar user 
-      // tidak bisa menekan tombol "Back" di browser untuk kembali ke profil
       router.replace("/login"); 
     } catch (error) {
       console.error("Gagal melakukan logout", error);
-      // Tetap paksa ke login jika error
       router.replace("/login");
     }
   };

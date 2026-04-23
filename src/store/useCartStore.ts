@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type CartItem = {
   id: string | number;
@@ -17,15 +17,16 @@ export type CanteenCart = {
 
 type CartStore = {
   carts: Record<string, CanteenCart>;
-  addToCart: (canteenId: string, item: Omit<CartItem, 'qty'>) => void;
+  addToCart: (canteenId: string, item: Omit<CartItem, "qty">) => void;
   increaseQty: (canteenId: string, itemId: string | number) => void;
   decreaseQty: (canteenId: string, itemId: string | number) => void;
   clearCart: (canteenId: string) => void;
+  resetAll: () => void;
 };
 
 export const useCartStore = create<CartStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       carts: {},
 
       addToCart: (canteenId, item) =>
@@ -34,9 +35,10 @@ export const useCartStore = create<CartStore>()(
           const existingItem = currentCart.items.find((i) => i.id === item.id);
 
           let newItems;
+
           if (existingItem) {
             newItems = currentCart.items.map((i) =>
-              i.id === item.id ? { ...i, qty: i.qty + 1 } : i
+              i.id === item.id ? { ...i, qty: i.qty + 1 } : i,
             );
           } else {
             newItems = [...currentCart.items, { ...item, qty: 1 }];
@@ -58,13 +60,15 @@ export const useCartStore = create<CartStore>()(
           const currentCart = state.carts[canteenId];
           if (!currentCart) return state;
 
+          const newItems = currentCart.items.map((item) =>
+            item.id === itemId ? { ...item, qty: item.qty + 1 } : item,
+          );
+
           return {
             carts: {
               ...state.carts,
               [canteenId]: {
-                items: currentCart.items.map((item) =>
-                  item.id === itemId ? { ...item, qty: item.qty + 1 } : item
-                ),
+                items: newItems,
                 count: currentCart.count + 1,
               },
             },
@@ -80,11 +84,12 @@ export const useCartStore = create<CartStore>()(
           if (!existingItem) return state;
 
           let newItems;
+
           if (existingItem.qty === 1) {
             newItems = currentCart.items.filter((i) => i.id !== itemId);
           } else {
             newItems = currentCart.items.map((item) =>
-              item.id === itemId ? { ...item, qty: item.qty - 1 } : item
+              item.id === itemId ? { ...item, qty: item.qty - 1 } : item,
             );
           }
 
@@ -93,7 +98,7 @@ export const useCartStore = create<CartStore>()(
               ...state.carts,
               [canteenId]: {
                 items: newItems,
-                count: currentCart.count - 1,
+                count: Math.max(0, currentCart.count - 1),
               },
             },
           };
@@ -105,9 +110,14 @@ export const useCartStore = create<CartStore>()(
           delete newCarts[canteenId];
           return { carts: newCarts };
         }),
+
+      resetAll: () =>
+        set(() => ({
+          carts: {},
+        })),
     }),
     {
-      name: 'kantin-cart-storage',
-    }
-  )
+      name: "kantin-cart-storage",
+    },
+  ),
 );

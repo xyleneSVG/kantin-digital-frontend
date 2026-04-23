@@ -188,6 +188,8 @@ export const changePassword = async (
   }
 };
 
+import { useCartStore } from "@/src/store/useCartStore";
+
 export const logoutUser = async () => {
   try {
     await fetch("/api/logout", {
@@ -198,10 +200,17 @@ export const logoutUser = async () => {
     localStorage.removeItem("api_key");
     localStorage.removeItem("api_secret");
 
+    useCartStore.getState().resetAll();
+    localStorage.removeItem("kantin-cart-storage");
+
     return true;
   } catch (err) {
     localStorage.removeItem("api_key");
     localStorage.removeItem("api_secret");
+
+    useCartStore.getState().resetAll();
+    localStorage.removeItem("kantin-cart-storage");
+
     throw err;
   }
 };
