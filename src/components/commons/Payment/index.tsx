@@ -18,7 +18,6 @@ import {
   Tag,
 } from "lucide-react";
 import { ModalComponent } from "../../ui";
-import { data } from "framer-motion/client";
 
 export default function PaymentPage() {
   const router = useRouter();
@@ -95,8 +94,13 @@ export default function PaymentPage() {
         }),
       });
       if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      const invoiceId = data?.data?.sales_invoice_id;
+      if (!invoiceId) throw new Error("Invoice ID tidak ditemukan");
       clearCart(canteenId);
-      router.push(`/kantin/${canteenId}/checkout/payment/inquiry`);
+      router.push(
+        `/kantin/${canteenId}/checkout/payment/${encodeURIComponent(invoiceId)}`,
+      );
     } catch (e) {
       console.error(e);
     } finally {
@@ -122,10 +126,10 @@ export default function PaymentPage() {
             </p>
           </div>
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.back()}
             className="bg-primary mt-1 rounded-2xl px-8 py-3 text-[13px] font-bold text-white shadow-sm transition-transform active:scale-95"
           >
-            Kembali ke Beranda
+            Kembali ke Kantin
           </button>
         </div>
       </div>
