@@ -39,7 +39,7 @@ export default function OrderListsPage() {
           customer: item.customer,
           posting_date: item.posting_date,
           grand_total: item.grand_total,
-          orderStatus: "not_processed",
+          orderStatus: item.status,
         }));
 
         setOrders(mapped);

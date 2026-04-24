@@ -19,7 +19,9 @@ export default function StockListPage() {
   const [purchases, setPurchases] = useState<PurchaseInvoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [canteen] = useState("Kantin Mak Cor");
+  const company =
+    typeof window !== "undefined" ? localStorage.getItem("company") || "" : "";
+  const [canteen] = useState(company);
 
   const loadData = async (query = "") => {
     setLoading(true);

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { 
-  Container, 
-  InputSearchComponent, 
-  ButtonComponent 
+import {
+  Container,
+  InputSearchComponent,
+  ButtonComponent,
 } from "@/src/components/ui";
 
 import { CanteenRecommendationComponent } from "./CanteenRecommendation";
@@ -14,19 +14,27 @@ import { BestChoiceComponent } from "./BestChoice";
 import { DATA } from "@/src/constants/data";
 import { changePassword } from "@/src/services/auth";
 // Pastikan import fungsi service baru ini
-import { getCanteenRecommendations, getMenuRecommendations } from "@/src/services/user"; 
+import {
+  getCanteenRecommendations,
+  getMenuRecommendations,
+} from "@/src/services/user";
 import ScreenLoader from "@/src/hooks/useScreenLoader";
+import { ASSETS } from "@/src/constants/assets";
 
 export default function HomePage() {
   const { headerImage, category } = DATA.home;
 
   const [canteenRecs, setCanteenRecs] = useState<any[]>([]);
   // Tambahkan state untuk data Best Choice
-  const [bestChoiceRecs, setBestChoiceRecs] = useState<any[]>([]); 
-  const [isFetchingData, setIsFetchingData] = useState(true); 
+  const [bestChoiceRecs, setBestChoiceRecs] = useState<any[]>([]);
+  const [isFetchingData, setIsFetchingData] = useState(true);
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
+  const [passwords, setPasswords] = useState({
+    current: "",
+    new: "",
+    confirm: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -41,14 +49,14 @@ export default function HomePage() {
         // Fetch dua API sekaligus secara bersamaan agar lebih cepat
         const [canteenData, menuData] = await Promise.all([
           getCanteenRecommendations(),
-          getMenuRecommendations()
+          getMenuRecommendations(),
         ]);
-        
+
         // 1. Format Data Kantin
         const formattedCanteen = canteenData.map((item: any) => {
-          const fullImageUrl = item.image 
-            ? `https://ta-dev.subekti.web.id${item.image}` 
-            : "/assets/images/placeholder.png"; 
+          const fullImageUrl = item.image
+            ? `https://ta-dev.subekti.web.id${item.image}`
+            : ASSETS.PROFILE
 
           return {
             ...item,
@@ -58,20 +66,22 @@ export default function HomePage() {
 
         // 2. Format Data Menu (Best Choice)
         const formattedMenu = menuData.map((item: any) => {
-          const fullImageUrl = item.image 
-            ? `https://ta-dev.subekti.web.id${item.image}` 
-            : "/assets/images/placeholder.png"; 
+          const fullImageUrl = item.image
+            ? `https://ta-dev.subekti.web.id${item.image}`
+            : ASSETS.PROFILE
 
           // Ambil nama kantin dari item_group (Misal: "Kantin Mak Cor - Minuman" -> "Kantin Mak Cor")
-          const kantinName = item.item_group ? item.item_group.split(" - ")[0] : "k1";
+          const kantinName = item.item_group
+            ? item.item_group.split(" - ")[0]
+            : "k1";
 
           return {
-            id: item.item_code,      // Disimpan untuk parameter URL openMenu
-            name: item.item_name,    // Ditampilkan di card
+            id: item.item_code, // Disimpan untuk parameter URL openMenu
+            name: item.item_name, // Ditampilkan di card
             image: fullImageUrl,
-            kantinId: kantinName,    // Disimpan untuk pindah halaman ke kantin tersebut
-            price: item.selling_price, 
-            rating: 0,               // Default rating jika belum ada di API
+            kantinId: kantinName, // Disimpan untuk pindah halaman ke kantin tersebut
+            price: item.selling_price,
+            rating: 0, // Default rating jika belum ada di API
           };
         });
 
@@ -109,7 +119,9 @@ export default function HomePage() {
       localStorage.removeItem("first_time_activation");
       setShowPasswordModal(false);
     } catch (err: any) {
-      setErrorMsg(err.message || "Gagal menyimpan password. Silakan coba lagi.");
+      setErrorMsg(
+        err.message || "Gagal menyimpan password. Silakan coba lagi.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -135,13 +147,13 @@ export default function HomePage() {
           classNameContainer="mb-[24px] border"
           placeholderText={"Lagi mau mamam apa?"}
         />
-        
+
         <CanteenRecommendationComponent
           sectionTitle="Rekomendasi Kantin"
-          data={canteenRecs} 
+          data={canteenRecs}
           classNameContainer="mb-6"
         />
-        
+
         <CategoryComponent
           classNameContainer="mb-6"
           sectionTitle={"Aneka Kategori"}
@@ -151,21 +163,88 @@ export default function HomePage() {
         {/* Masukkan state bestChoiceRecs ke sini */}
         <BestChoiceComponent
           sectionTitle={"Pilihan Terbaik"}
-          data={bestChoiceRecs} 
+          data={bestChoiceRecs}
         />
       </Container>
 
       {/* Modal ... (Tetap sama seperti kodemu) ... */}
       {showPasswordModal && (
-        // ... (Isi modal disembunyikan agar kode lebih ringkas dibaca) ...
-        <div className="fixed inset-0 z-1000 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
-           <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
-            <h2 className="mb-2 text-center font-sans text-xl font-bold">Keamanan Akun</h2>
-            {/* ... form modalmu ... */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <h2 className="mb-4 text-center text-xl font-bold">
+              Keamanan Akun
+            </h2>
+
+            {errorMsg && (
+              <p className="mb-3 text-sm text-red-500">{errorMsg}</p>
+            )}
+
+            {/* Current Password */}
+            <div className="mb-3">
+              <label className="mb-1 block text-sm font-medium">
+                Password Saat Ini
+              </label>
+              <input
+                type="password"
+                value={passwords.current}
+                onChange={(e) =>
+                  setPasswords((prev) => ({
+                    ...prev,
+                    current: e.target.value,
+                  }))
+                }
+                className="w-full rounded-lg border px-3 py-2"
+                placeholder="Masukkan password saat ini"
+              />
+            </div>
+
+            {/* New Password */}
+            <div className="mb-3">
+              <label className="mb-1 block text-sm font-medium">
+                Password Baru
+              </label>
+              <input
+                type="password"
+                value={passwords.new}
+                onChange={(e) =>
+                  setPasswords((prev) => ({
+                    ...prev,
+                    new: e.target.value,
+                  }))
+                }
+                className="w-full rounded-lg border px-3 py-2"
+                placeholder="Masukkan password baru"
+              />
+            </div>
+
+            {/* Retype Password */}
+            <div className="mb-5">
+              <label className="mb-1 block text-sm font-medium">
+                Ulangi Password Baru
+              </label>
+              <input
+                type="password"
+                value={passwords.confirm}
+                onChange={(e) =>
+                  setPasswords((prev) => ({
+                    ...prev,
+                    confirm: e.target.value,
+                  }))
+                }
+                className="w-full rounded-lg border px-3 py-2"
+                placeholder="Ulangi password baru"
+              />
+            </div>
+
             <ButtonComponent
               text={isLoading ? "Menyimpan..." : "Simpan Password"}
               onClick={handleChangePassword}
-              disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm}
+              disabled={
+                isLoading ||
+                !passwords.current ||
+                !passwords.new ||
+                !passwords.confirm
+              }
               className={isLoading ? "opacity-50" : ""}
             />
           </div>

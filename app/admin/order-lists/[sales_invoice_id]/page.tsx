@@ -39,7 +39,7 @@ interface OrderDetail {
   set_warehouse: string;
   grand_total: number;
   status: string;
-  payment_method: "tunai" | "non_tunai";
+  payment_method: "tunai" | "non-tunai";
   items: OrderItem[];
 }
 
@@ -48,6 +48,12 @@ export default function OrderDetailPage() {
   const sales_invoice_id = params.sales_invoice_id as string;
   const [order, setOrder] = useState<OrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const getAuthHeader = () => {
+    const apiKey = localStorage.getItem("api_key");
+    const apiSecret = localStorage.getItem("api_secret");
+    return `token ${apiKey}:${apiSecret}`;
+  };
 
   const [orderStatus, setOrderStatus] = useState<
     "not_processed" | "processing" | "waiting_pickup" | "completed"
@@ -61,27 +67,36 @@ export default function OrderDetailPage() {
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
-        const data = await getSalesInvoiceDetail(sales_invoice_id);
+        const res = await getSalesInvoiceDetail(sales_invoice_id);
+        const { sales_invoice, payment } = res;
 
         const mapped: OrderDetail = {
-          sales_invoice_id: data.name,
-          customer: data.customer,
-          company: data.company,
-          posting_date: data.posting_date,
-          set_warehouse: data.set_warehouse,
-          grand_total: data.grand_total,
-          status: data.status,
+          sales_invoice_id: sales_invoice.id,
+          customer: sales_invoice.customer_name ?? sales_invoice.customer,
+          company: sales_invoice.company,
+          posting_date: sales_invoice.posting_date,
+          set_warehouse: sales_invoice.warehouse,
+          grand_total: sales_invoice.grand_total,
+          status: sales_invoice.status,
+
           payment_method:
-            data.payment_method === "Non Tunai" ? "non_tunai" : "tunai",
-          items: data.items || [],
+            payment.payment_method === "Non Tunai" ? "tunai" : "non-tunai",
+          items: sales_invoice.items || [],
         };
 
         setOrder(mapped);
 
-        if (mapped.payment_method === "non_tunai") {
+        const isPaid =
+          payment.payment_method === "Non Tunai" &&
+          payment.payment_status === "settlement";
+
+        if (isPaid) {
           setPaymentStatus("lunas");
+
+          setOrderStatus("processing");
         } else {
           setPaymentStatus("belum_dibayar");
+          setOrderStatus("not_processed");
         }
       } catch (error) {
         console.error("Failed to fetch order detail:", error);
@@ -93,6 +108,36 @@ export default function OrderDetailPage() {
     if (sales_invoice_id) fetchOrderDetail();
   }, [sales_invoice_id]);
 
+  const callOrderReceived = async () => {
+    const res = await fetch(
+      `https://ta-dev.subekti.web.id/api/method/kantin_stemba.api.sales_invoice.order_received`,
+      {
+        method: "POST",
+        headers: {
+          authorization: getAuthHeader(),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ sales_invoice_id }),
+      },
+    );
+    if (!res.ok) throw new Error("order_received gagal");
+  };
+
+  const callReadyForPickup = async () => {
+    const res = await fetch(
+      `https://ta-dev.subekti.web.id/api/method/kantin_stemba.api.sales_invoice.ready_for_pickup`,
+      {
+        method: "POST",
+        headers: {
+          authorization: getAuthHeader(),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ sales_invoice_id }),
+      },
+    );
+    if (!res.ok) throw new Error("ready_for_pickup gagal");
+  };
+
   const handleProcessOrder = async () => {
     if (orderStatus === "waiting_pickup" && order?.payment_method === "tunai") {
       setShowPaymentAlert(true);
@@ -101,17 +146,15 @@ export default function OrderDetailPage() {
 
     setIsProcessing(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      if (orderStatus === "not_processed") {
-        setOrderStatus("processing");
-      } else if (orderStatus === "processing") {
+      if (orderStatus === "processing") {
+        await callOrderReceived();
         setOrderStatus("waiting_pickup");
       } else if (orderStatus === "waiting_pickup") {
+        await callReadyForPickup();
         setOrderStatus("completed");
       }
     } catch (error) {
-      console.error("Failed to process order:", error);
+      console.error("Gagal memproses pesanan:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -120,12 +163,12 @@ export default function OrderDetailPage() {
   const handlePaymentConfirm = async () => {
     setIsProcessing(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await callReadyForPickup();
       setPaymentStatus("lunas");
       setOrderStatus("completed");
       setShowPaymentAlert(false);
     } catch (error) {
-      console.error("Failed to confirm payment:", error);
+      console.error("Gagal konfirmasi pembayaran:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -170,7 +213,7 @@ export default function OrderDetailPage() {
       case "not_processed":
         return "Proses Pesanan";
       case "processing":
-        return "Pesanan Selesai";
+        return "Pesanan Siap Diambil";
       case "waiting_pickup":
         return "Barang Sudah Diambil";
       default:
@@ -388,43 +431,46 @@ export default function OrderDetailPage() {
                   </CardContent>
                 </Card>
 
-                {orderStatus !== "completed" && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Status Pesanan</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div
-                        className={`flex items-center gap-2 rounded-lg p-3 ${getOrderStatusColor()}`}
-                      >
-                        <CheckCircle2 className="h-5 w-5" />
-                        <span className="font-semibold">
-                          {getOrderStatusLabel()}
-                        </span>
-                      </div>
-                      <Button
-                        onClick={handleProcessOrder}
-                        disabled={isProcessing}
-                        className="w-full gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
-                      >
-                        {isProcessing ? (
-                          <>
-                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                            Memproses...
-                          </>
-                        ) : (
-                          <>
-                            <DollarSign className="h-4 w-4" />
-                            {getButtonLabel()}
-                          </>
-                        )}
-                      </Button>
-                      <p className="text-center text-xs text-gray-600">
-                        Klik tombol untuk melanjutkan ke tahap berikutnya
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
+                {orderStatus !== "completed" &&
+                  orderStatus !== "not_processed" && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                          Status Pesanan
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div
+                          className={`flex items-center gap-2 rounded-lg p-3 ${getOrderStatusColor()}`}
+                        >
+                          <CheckCircle2 className="h-5 w-5" />
+                          <span className="font-semibold">
+                            {getOrderStatusLabel()}
+                          </span>
+                        </div>
+                        <Button
+                          onClick={handleProcessOrder}
+                          disabled={isProcessing}
+                          className="w-full gap-2 bg-emerald-600 text-white hover:bg-emerald-700"
+                        >
+                          {isProcessing ? (
+                            <>
+                              <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                              Memproses...
+                            </>
+                          ) : (
+                            <>
+                              <DollarSign className="h-4 w-4" />
+                              {getButtonLabel()}
+                            </>
+                          )}
+                        </Button>
+                        <p className="text-center text-xs text-gray-600">
+                          Klik tombol untuk melanjutkan ke tahap berikutnya
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
 
                 {orderStatus === "completed" && (
                   <Card className="border-2 border-green-200">

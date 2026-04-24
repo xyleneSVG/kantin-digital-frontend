@@ -18,10 +18,11 @@ export default function AddMenuPage() {
 
   const [formData, setFormData] = useState({
     namaItem: "",
-    grupItem: "Makanan Utama",
+    grupItem: "Minuman",
     hargaJual: "",
     deskripsi: "",
     tersedia: false,
+    disabled: false,
     uom: "pcs",
     kuantitasUom: 1,
   });
@@ -86,6 +87,7 @@ export default function AddMenuPage() {
         is_stock_item: formData.tersedia,
         selling_price: Number(formData.hargaJual),
         company,
+        disabled: formData.disabled,
       };
 
       if (base64Image) {
@@ -152,10 +154,9 @@ export default function AddMenuPage() {
                     value={formData.grupItem}
                     onChange={handleInputChange}
                     className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
-                    required
                   >
                     <option value="Minuman">Minuman</option>
-                    <option value="Minuman">Minuman</option>
+                    <option value="Makanan">Makanan</option>
                     <option value="Camilan">Camilan</option>
                   </select>
                 </div>
@@ -178,7 +179,7 @@ export default function AddMenuPage() {
 
               <div>
                 <label className="text-foreground mb-2 block text-sm font-medium">
-                  Deskripsi*
+                  Deskripsi
                 </label>
                 <textarea
                   name="deskripsi"
@@ -187,7 +188,6 @@ export default function AddMenuPage() {
                   placeholder="Deskripsi lengkap menu..."
                   rows={4}
                   className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
-                  required
                 />
               </div>
             </CardContent>
@@ -248,7 +248,6 @@ export default function AddMenuPage() {
                   checked={formData.tersedia}
                   onChange={handleInputChange}
                   className="border-border h-4 w-4 rounded"
-                  required
                 />
                 <label className="text-foreground text-sm font-medium">
                   Item tersedia untuk dijual?
@@ -257,6 +256,45 @@ export default function AddMenuPage() {
               <p className="text-muted-foreground text-xs">
                 Uncheck jika item sedang habis atau tidak ingin dijual
               </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Status Item</CardTitle>
+              <CardDescription>
+                Aktifkan jika item dinonaktifkan sementara
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-foreground text-sm font-medium">
+                    Nonaktifkan Item
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Item tidak akan bisa diproses jika dinonaktifkan
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      disabled: !prev.disabled,
+                    }))
+                  }
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    formData.disabled ? "bg-red-500" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg transition-transform duration-200 ease-in-out ${
+                      formData.disabled ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
             </CardContent>
           </Card>
 
@@ -276,7 +314,6 @@ export default function AddMenuPage() {
                     value={formData.uom}
                     onChange={handleInputChange}
                     className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
-                    required
                   >
                     <option value="pcs">Pcs</option>
                     <option value="gram">Gram</option>
@@ -297,7 +334,6 @@ export default function AddMenuPage() {
                     onChange={handleInputChange}
                     className="border-border focus:ring-primary/50 w-full rounded-lg border px-4 py-2 focus:ring-2 focus:outline-none"
                     min="1"
-                    required
                   />
                 </div>
               </div>
@@ -320,7 +356,6 @@ export default function AddMenuPage() {
                               value={conv.dari}
                               readOnly
                               className="border-border bg-muted w-full rounded border px-3 py-2"
-                              required
                             />
                           </div>
                           <div className="flex-1">
@@ -339,7 +374,6 @@ export default function AddMenuPage() {
                               }
                               placeholder="Contoh: gram"
                               className="border-border focus:ring-primary/50 w-full rounded border px-3 py-2 focus:ring-2 focus:outline-none"
-                              required
                             />
                           </div>
                           <div className="flex-1">
@@ -358,7 +392,6 @@ export default function AddMenuPage() {
                               }
                               className="border-border focus:ring-primary/50 w-full rounded border px-3 py-2 focus:ring-2 focus:outline-none"
                               min="1"
-                              required
                             />
                           </div>
                           <button

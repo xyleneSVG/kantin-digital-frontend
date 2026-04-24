@@ -260,9 +260,14 @@ export default function SuccessPage() {
                     >
                       🍽️
                     </span>
-                    <p className="text-[13px] font-semibold text-gray-800">
-                      {item.name}
-                    </p>
+                    <div>
+                      <p className="text-[13px] font-semibold text-gray-800">
+                        {item.name}
+                      </p>
+                      <p className="text-[11px] text-gray-400">
+                        {item.qty} x Rp {formatRupiah(item.rate)}
+                      </p>
+                    </div>
                   </div>
                   <p
                     className={`shrink-0 text-[13px] font-bold ${theme.textPrimary}`}
@@ -327,7 +332,7 @@ export default function SuccessPage() {
             {isRefreshing ? (
               <RefreshCw size={16} className="animate-spin" />
             ) : (
-              <MapPin size={16} />
+              <RefreshCw size={16} />
             )}
             {isRefreshing ? "Mengecek..." : "Cek Transaksi Terkini"}
           </button>
