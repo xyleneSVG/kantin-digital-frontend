@@ -336,7 +336,9 @@ export const updateCanteen = async (payload: {
   canteen_id: string;
   canteen_name: string;
   location_description: string;
-  image: string;
+  image?: string;
+  open_time?: string;  
+  close_time?: string; 
 }) => {
   try {
     const apiKey = localStorage.getItem("api_key");

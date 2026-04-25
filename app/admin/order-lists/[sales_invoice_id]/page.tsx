@@ -64,6 +64,19 @@ export default function OrderDetailPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPaymentAlert, setShowPaymentAlert] = useState(false);
 
+  const mapStatusProses = (status: string) => {
+    switch (status) {
+      case "Pesanan Diproses":
+        return "processing";
+      case "Siap Diambil":
+        return "waiting_pickup";
+      case "Selesai":
+        return "completed";
+      default:
+        return "not_processed";
+    }
+  };
+
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
@@ -78,26 +91,18 @@ export default function OrderDetailPage() {
           set_warehouse: sales_invoice.warehouse,
           grand_total: sales_invoice.grand_total,
           status: sales_invoice.status,
-
           payment_method:
-            payment.payment_method === "Non Tunai" ? "tunai" : "non-tunai",
+            payment.payment_method === "Tunai" ? "tunai" : "non-tunai",
           items: sales_invoice.items || [],
         };
 
         setOrder(mapped);
 
-        const isPaid =
-          payment.payment_method === "Non Tunai" &&
-          payment.payment_status === "settlement";
+        const status = mapStatusProses(sales_invoice.status_proses);
+        setOrderStatus(status);
 
-        if (isPaid) {
-          setPaymentStatus("lunas");
-
-          setOrderStatus("processing");
-        } else {
-          setPaymentStatus("belum_dibayar");
-          setOrderStatus("not_processed");
-        }
+        const isPaid = status !== "not_processed";
+        setPaymentStatus(isPaid ? "lunas" : "belum_dibayar");
       } catch (error) {
         console.error("Failed to fetch order detail:", error);
       } finally {
@@ -147,10 +152,10 @@ export default function OrderDetailPage() {
     setIsProcessing(true);
     try {
       if (orderStatus === "processing") {
-        await callOrderReceived();
+        await callReadyForPickup();
         setOrderStatus("waiting_pickup");
       } else if (orderStatus === "waiting_pickup") {
-        await callReadyForPickup();
+        await callOrderReceived();
         setOrderStatus("completed");
       }
     } catch (error) {

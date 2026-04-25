@@ -38,7 +38,6 @@ export default function CanteenSettingsPage() {
     open: "",
     close: "",
   });
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,6 +51,14 @@ export default function CanteenSettingsPage() {
             : "",
           deskripsi_lokasi: data.location_description || "",
         });
+
+        setOperationalTime({
+          open: data.open_time?.slice(0, 5) || "",
+          close: data.close_time
+            ? data.close_time.padStart(8, "0").slice(0, 5)
+            : "",
+        });
+
         setPreviewImage(
           data.image
             ? `https://ta-dev.subekti.web.id/api/method/${data.image}`
@@ -112,10 +119,17 @@ export default function CanteenSettingsPage() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      const toTimeFormat = (time: string) => {
+        if (!time) return "";
+        return time.length === 5 ? `${time}:00` : time;
+      };
+
       const payload: any = {
         canteen_id: canteenInfo.kantin_id,
         canteen_name: canteenInfo.nama_kantin,
         location_description: canteenInfo.deskripsi_lokasi,
+        open_time: toTimeFormat(operationalTime.open), 
+        close_time: toTimeFormat(operationalTime.close), 
       };
       if (canteenInfo.image_url?.startsWith("data:image")) {
         payload.image = canteenInfo.image_url;
